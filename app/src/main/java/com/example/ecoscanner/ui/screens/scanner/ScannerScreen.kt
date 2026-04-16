@@ -39,7 +39,8 @@ fun ScannerScreen(navController: NavHostController) {
                 },
                 navigationIcon = {
                     IconButton(onClick = {}) {
-                        Icon(Icons.Filled.Menu, contentDescription = "Menú")
+                        Icon(Icons.Filled.Menu, contentDescription = "Menú",
+                            tint = MaterialTheme.colorScheme.primary)
                     }
                 },
                 actions = {
@@ -78,7 +79,7 @@ fun ScannerScreen(navController: NavHostController) {
                         .fillMaxWidth()
                         .aspectRatio(1f)
                         .clip(RoundedCornerShape(16.dp))
-                        .background(MaterialTheme.colorScheme.surfaceVariant)
+                        .background(MaterialTheme.colorScheme.background)
                         .border(3.dp, MaterialTheme.colorScheme.primary, RoundedCornerShape(16.dp)),
                     contentAlignment = Alignment.Center
                 ) {

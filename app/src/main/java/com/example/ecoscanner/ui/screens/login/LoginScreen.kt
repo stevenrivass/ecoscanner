@@ -20,7 +20,10 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.example.ecoscanner.ui.navigation.Routes
 import com.example.ecoscanner.ui.theme.EcoScannerTheme
-//h
+
+//merge
+
+
 @Composable
 fun LoginScreen(navController: NavHostController) {
     var email by remember { mutableStateOf("") }

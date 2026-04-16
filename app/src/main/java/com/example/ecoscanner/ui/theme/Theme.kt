@@ -17,9 +17,12 @@ private val DarkColorScheme = darkColorScheme(
 )
 
 private val LightColorScheme = lightColorScheme(
-    primary = Purple40,
-    secondary = GreenLigth,
-    tertiary = Pink40
+    primary = GreenPrimary,
+    secondary = Purple40,
+    tertiary = GreenLigth,
+    background = White,
+    surface = GreenDark,
+    onPrimary = GreenDark
 
     /* Other default colors to override
     background = Color(0xFFFFFBFE),
@@ -39,15 +42,7 @@ fun EcoScannerTheme(
     dynamicColor: Boolean = true,
     content: @Composable () -> Unit
 ) {
-    val colorScheme = when {
-        dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
-            val context = LocalContext.current
-            if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
-        }
-
-        darkTheme -> DarkColorScheme
-        else -> LightColorScheme
-    }
+    val colorScheme = if (darkTheme) DarkColorScheme else LightColorScheme
 
     MaterialTheme(
         colorScheme = colorScheme,

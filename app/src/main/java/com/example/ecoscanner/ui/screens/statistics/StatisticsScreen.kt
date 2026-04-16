@@ -47,7 +47,8 @@ fun StatisticsScreen(navController: NavHostController) {
                         text = "Historial",
                         style = MaterialTheme.typography.titleLarge.copy(
                             fontWeight = FontWeight.Bold
-                        )
+                        ),
+                        color = MaterialTheme.colorScheme.surface
                     )
                 },
                 navigationIcon = {
@@ -55,12 +56,12 @@ fun StatisticsScreen(navController: NavHostController) {
                         Icon(
                             imageVector = Icons.Filled.ArrowBack,
                             contentDescription = "Tornar enrere",
-                            tint = MaterialTheme.colorScheme.onSurface
+                            tint = MaterialTheme.colorScheme.surface
                         )
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.surface
+                    containerColor = MaterialTheme.colorScheme.tertiary
                 )
             )
         }
@@ -143,7 +144,7 @@ fun ProductHistoryCard(product: ProductHistoryItem) {
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(16.dp),
         colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surface
+            containerColor = MaterialTheme.colorScheme.tertiary
         ),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
