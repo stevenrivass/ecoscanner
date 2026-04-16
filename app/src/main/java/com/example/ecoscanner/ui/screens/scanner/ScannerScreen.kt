@@ -33,14 +33,14 @@ fun ScannerScreen(navController: NavHostController) {
                         text = "EcoScanner",
                         style = MaterialTheme.typography.titleLarge.copy(
                             fontWeight = FontWeight.Bold,
-                            color = MaterialTheme.colorScheme.primary
+                            color = MaterialTheme.colorScheme.surface
                         )
                     )
                 },
                 navigationIcon = {
                     IconButton(onClick = {}) {
                         Icon(Icons.Filled.Menu, contentDescription = "Menú",
-                            tint = MaterialTheme.colorScheme.primary)
+                            tint = MaterialTheme.colorScheme.surface)
                     }
                 },
                 actions = {
@@ -48,11 +48,15 @@ fun ScannerScreen(navController: NavHostController) {
                         Icon(
                             imageVector = Icons.Filled.AccountCircle,
                             contentDescription = "Perfil",
-                            tint = MaterialTheme.colorScheme.primary,
+                            tint = MaterialTheme.colorScheme.surface,
                             modifier = Modifier.size(32.dp)
                         )
                     }
-                }
+                },
+
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = MaterialTheme.colorScheme.tertiary
+                )
             )
         }
     ) { innerPadding ->
@@ -80,7 +84,7 @@ fun ScannerScreen(navController: NavHostController) {
                         .aspectRatio(1f)
                         .clip(RoundedCornerShape(16.dp))
                         .background(MaterialTheme.colorScheme.background)
-                        .border(3.dp, MaterialTheme.colorScheme.primary, RoundedCornerShape(16.dp)),
+                        .border(3.dp, MaterialTheme.colorScheme.surface, RoundedCornerShape(16.dp)),
                     contentAlignment = Alignment.Center
                 ) {
                     Column(
@@ -90,7 +94,7 @@ fun ScannerScreen(navController: NavHostController) {
                         Icon(
                             imageVector = Icons.Filled.QrCodeScanner,
                             contentDescription = "Escàner",
-                            tint = MaterialTheme.colorScheme.primary,
+                            tint = MaterialTheme.colorScheme.surface,
                             modifier = Modifier.size(64.dp)
                         )
                         Text("Escaneja el codi de barres", textAlign = TextAlign.Center)
@@ -102,18 +106,26 @@ fun ScannerScreen(navController: NavHostController) {
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.spacedBy(16.dp)
             ) {
-                OutlinedButton(
+               Button(
                     onClick = { navController.navigate(Routes.STATISTICS) },
                     modifier = Modifier.weight(1f).height(56.dp),
-                    shape = MaterialTheme.shapes.medium
+                    shape = MaterialTheme.shapes.medium,
+                    colors = ButtonDefaults.outlinedButtonColors(
+                        containerColor = MaterialTheme.colorScheme.tertiary,
+                        contentColor = MaterialTheme.colorScheme.onSurface
+                    )
                 ) {
-                    Text("Historial")
+                    Text("Historial", fontWeight = FontWeight.Bold)
                 }
 
                 Button(
                     onClick = { navController.navigate(Routes.CALCULATION) },
                     modifier = Modifier.weight(1f).height(56.dp),
-                    shape = MaterialTheme.shapes.medium
+                    shape = MaterialTheme.shapes.medium,
+                    colors = ButtonDefaults.outlinedButtonColors(
+                        containerColor = MaterialTheme.colorScheme.tertiary,
+                        contentColor = MaterialTheme.colorScheme.onSurface
+                    )
                 ) {
                     Text("Escanejar", fontWeight = FontWeight.Bold)
                 }

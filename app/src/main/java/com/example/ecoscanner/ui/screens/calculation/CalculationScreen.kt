@@ -30,12 +30,16 @@ fun CalculationScreen(navController: NavHostController) {
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("EcoScanner", fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.primary) },
+                title = { Text("EcoScanner", fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.surface) },
                 navigationIcon = {
                     IconButton(onClick = { navController.popBackStack() }) {
                         Icon(Icons.Filled.ArrowBack, contentDescription = "Enrere")
                     }
-                }
+                },
+
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = MaterialTheme.colorScheme.tertiary
+                )
             )
         }
     ) { innerPadding ->
@@ -105,7 +109,11 @@ fun CalculationScreen(navController: NavHostController) {
                         popUpTo(Routes.SCANNER) { inclusive = false }
                     }
                 },
-                modifier = Modifier.fillMaxWidth().height(56.dp)
+                modifier = Modifier.fillMaxWidth().height(56.dp),
+                colors = ButtonDefaults.outlinedButtonColors(
+                    containerColor = MaterialTheme.colorScheme.tertiary,
+                    contentColor = MaterialTheme.colorScheme.onSurface
+                )
             ) {
                 Text("Tornar a l'inici", fontWeight = FontWeight.Bold)
             }
