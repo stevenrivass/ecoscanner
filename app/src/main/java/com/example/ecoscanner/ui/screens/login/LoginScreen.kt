@@ -1,4 +1,4 @@
-package com.example.ecoscanner.ui.screens
+package com.example.ecoscanner.ui.screens.login
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardOptions
