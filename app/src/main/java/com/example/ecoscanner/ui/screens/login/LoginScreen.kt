@@ -1,4 +1,4 @@
-package com.example.ecoscanner.ui.screens
+package com.example.ecoscanner.ui.screens.login
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardOptions
@@ -18,7 +18,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
-import com.example.ecoscanner.navigation.Screen
+import com.example.ecoscanner.ui.navigation.Routes
 import com.example.ecoscanner.ui.theme.EcoScannerTheme
 
 @Composable
@@ -38,7 +38,6 @@ fun LoginScreen(navController: NavHostController) {
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
 
-            // Icono ecológico
             Icon(
                 imageVector = Icons.Filled.Eco,
                 contentDescription = "Eco icon",
@@ -48,7 +47,6 @@ fun LoginScreen(navController: NavHostController) {
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // Título principal
             Text(
                 text = "EcoScanner",
                 style = MaterialTheme.typography.displayMedium.copy(
@@ -59,24 +57,18 @@ fun LoginScreen(navController: NavHostController) {
             )
 
             Text(
-                text = "Conoce el origen de tus productos",
+                text = "Coneix l'origen dels teus productes",
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
 
             Spacer(modifier = Modifier.height(48.dp))
 
-            // Campo Email
             OutlinedTextField(
                 value = email,
                 onValueChange = { email = it },
                 label = { Text("Email") },
-                leadingIcon = {
-                    Icon(
-                        imageVector = Icons.Filled.MailOutline,
-                        contentDescription = "Email icon"
-                    )
-                },
+                leadingIcon = { Icon(Icons.Filled.MailOutline, contentDescription = null) },
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
                 singleLine = true,
                 modifier = Modifier.fillMaxWidth(),
@@ -85,17 +77,11 @@ fun LoginScreen(navController: NavHostController) {
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // Campo Contraseña
             OutlinedTextField(
                 value = password,
                 onValueChange = { password = it },
-                label = { Text("Contraseña") },
-                leadingIcon = {
-                    Icon(
-                        imageVector = Icons.Filled.Lock,
-                        contentDescription = "Password icon"
-                    )
-                },
+                label = { Text("Contrasenya") },
+                leadingIcon = { Icon(Icons.Filled.Lock, contentDescription = null) },
                 visualTransformation = PasswordVisualTransformation(),
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
                 singleLine = true,
@@ -105,32 +91,18 @@ fun LoginScreen(navController: NavHostController) {
 
             Spacer(modifier = Modifier.height(32.dp))
 
-            // Botón de acceso
             Button(
                 onClick = {
-                    navController.navigate(Screen.Scanner.route) {
-                        popUpTo(Screen.Login.route) { inclusive = true }
+                    navController.navigate(Routes.SCANNER) {
+                        popUpTo(Routes.LOGIN) { inclusive = true }
                     }
                 },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(56.dp),
+                modifier = Modifier.fillMaxWidth().height(56.dp),
                 shape = MaterialTheme.shapes.medium
             ) {
                 Text(
-                    text = "Acceder",
-                    style = MaterialTheme.typography.titleMedium.copy(
-                        fontWeight = FontWeight.Bold
-                    )
-                )
-            }
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-            TextButton(onClick = {}) {
-                Text(
-                    text = "¿No tienes cuenta? Regístrate",
-                    color = MaterialTheme.colorScheme.primary
+                    text = "Accedir",
+                    style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold)
                 )
             }
         }
@@ -140,7 +112,5 @@ fun LoginScreen(navController: NavHostController) {
 @Preview(showBackground = true)
 @Composable
 fun LoginScreenPreview() {
-    EcoScannerTheme {
-        LoginScreen(navController = rememberNavController())
-    }
+    EcoScannerTheme { LoginScreen(navController = rememberNavController()) }
 }

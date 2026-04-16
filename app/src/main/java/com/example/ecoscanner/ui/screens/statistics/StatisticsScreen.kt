@@ -1,4 +1,4 @@
-package com.example.ecoscanner.ui.screens
+package com.example.ecoscanner.ui.screens.statistics
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn

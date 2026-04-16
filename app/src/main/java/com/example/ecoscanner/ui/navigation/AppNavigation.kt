@@ -1,49 +1,41 @@
-package com.example.ecoscanner.navigation
+package com.example.ecoscanner.ui.navigation
 
 import androidx.compose.runtime.Composable
-import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import androidx.compose.ui.tooling.preview.Preview
-import com.example.ecoscanner.ui.screens.CalculationScreen
-import com.example.ecoscanner.ui.screens.LoginScreen
-import com.example.ecoscanner.ui.screens.ScannerScreen
-import com.example.ecoscanner.ui.screens.StatisticsScreen
-import com.example.ecoscanner.ui.theme.EcoScannerTheme
+import com.example.ecoscanner.ui.screens.calculation.CalculationScreen
+import com.example.ecoscanner.ui.screens.login.LoginScreen
+import com.example.ecoscanner.ui.screens.scanner.ScannerScreen
+import com.example.ecoscanner.ui.screens.statistics.StatisticsScreen
 
-sealed class Screen(val route: String) {
-    object Login : Screen("login")
-    object Scanner : Screen("scanner")
-    object Calculation : Screen("calculation")
-    object Statistics : Screen("statistics")
+// Objeto para tener los nombres de las rutas sin equivocarnos
+object Routes {
+    const val LOGIN = "login"
+    const val SCANNER = "scanner"
+    const val CALCULATION = "calculation"
+    const val STATISTICS = "statistics"
 }
 
 @Composable
-fun AppNavigation(navController: NavHostController = rememberNavController()) {
+fun AppNavigation() {
+    val navController = rememberNavController()
+
     NavHost(
         navController = navController,
-        startDestination = Screen.Login.route
+        startDestination = Routes.LOGIN
     ) {
-        composable(Screen.Login.route) {
-            LoginScreen(navController = navController)
+        composable(Routes.LOGIN) {
+            LoginScreen(navController)
         }
-        composable(Screen.Scanner.route) {
-            ScannerScreen(navController = navController)
+        composable(Routes.SCANNER) {
+            ScannerScreen(navController)
         }
-        composable(Screen.Calculation.route) {
-            CalculationScreen(navController = navController)
+        composable(Routes.CALCULATION) {
+            CalculationScreen(navController)
         }
-        composable(Screen.Statistics.route) {
-            StatisticsScreen(navController = navController)
+        composable(Routes.STATISTICS) {
+            StatisticsScreen(navController)
         }
-    }
-}
-
-@Preview(showBackground = true)
-@Composable
-fun AppNavigationPreview() {
-    EcoScannerTheme {
-        AppNavigation(navController = rememberNavController())
     }
 }
