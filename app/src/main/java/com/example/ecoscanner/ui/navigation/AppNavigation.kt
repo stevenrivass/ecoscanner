@@ -9,7 +9,8 @@ import com.example.ecoscanner.ui.screens.login.LoginScreen
 import com.example.ecoscanner.ui.screens.scanner.ScannerScreen
 import com.example.ecoscanner.ui.screens.statistics.StatisticsScreen
 
-// Objeto para tener los nombres de las rutas sin equivocarnos
+
+// Objeto para tener los nombres de las rutas sin equivocarno
 object Routes {
     const val LOGIN = "login"
     const val SCANNER = "scanner"
