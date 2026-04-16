@@ -30,7 +30,7 @@ fun CalculationScreen(navController: NavHostController) {
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("EcoScanner", fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.surface) },
+                title = { Text("NearChoice", fontWeight = FontWeight.Bold, color = MaterialTheme.colorScheme.surface) },
                 navigationIcon = {
                     IconButton(onClick = { navController.popBackStack() }) {
                         Icon(Icons.Filled.ArrowBack, contentDescription = "Enrere")

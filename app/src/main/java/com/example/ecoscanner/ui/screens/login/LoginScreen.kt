@@ -1,5 +1,6 @@
 package com.example.ecoscanner.ui.screens.login
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
@@ -10,6 +11,8 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
@@ -20,6 +23,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.example.ecoscanner.ui.navigation.Routes
 import com.example.ecoscanner.ui.theme.EcoScannerTheme
+import com.example.ecoscanner.R
 
 //merge
 
@@ -41,26 +45,15 @@ fun LoginScreen(navController: NavHostController) {
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
 
-            Icon(
-                imageVector = Icons.Filled.Eco,
-                contentDescription = "Eco icon",
-                tint = MaterialTheme.colorScheme.primary,
-                modifier = Modifier.size(72.dp)
+            Image(
+                painter = painterResource(R.drawable.icon),
+                contentDescription = null,
             )
 
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(28.dp))
 
             Text(
-                text = "EcoScanner",
-                style = MaterialTheme.typography.displayMedium.copy(
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 48.sp,
-                    color = MaterialTheme.colorScheme.primary
-                )
-            )
-
-            Text(
-                text = "Coneix l'origen dels teus productes",
+                text = "Conoce el origen de tus productos",
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
@@ -83,7 +76,7 @@ fun LoginScreen(navController: NavHostController) {
             OutlinedTextField(
                 value = password,
                 onValueChange = { password = it },
-                label = { Text("Contrasenya") },
+                label = { Text("Contraseña") },
                 leadingIcon = { Icon(Icons.Filled.Lock, contentDescription = null) },
                 visualTransformation = PasswordVisualTransformation(),
                 keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
@@ -101,10 +94,14 @@ fun LoginScreen(navController: NavHostController) {
                     }
                 },
                 modifier = Modifier.fillMaxWidth().height(56.dp),
-                shape = MaterialTheme.shapes.medium
+                shape = MaterialTheme.shapes.medium,
+                colors = ButtonDefaults.outlinedButtonColors(
+                    containerColor = MaterialTheme.colorScheme.tertiary,
+                    contentColor = MaterialTheme.colorScheme.onSurface
+                )
             ) {
                 Text(
-                    text = "Accedir",
+                    text = "Acceder",
                     style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold)
                 )
             }

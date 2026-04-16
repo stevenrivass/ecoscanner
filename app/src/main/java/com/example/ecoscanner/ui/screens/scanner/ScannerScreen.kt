@@ -30,7 +30,7 @@ fun ScannerScreen(navController: NavHostController) {
             TopAppBar(
                 title = {
                     Text(
-                        text = "EcoScanner",
+                        text = "NearChoice",
                         style = MaterialTheme.typography.titleLarge.copy(
                             fontWeight = FontWeight.Bold,
                             color = MaterialTheme.colorScheme.surface
