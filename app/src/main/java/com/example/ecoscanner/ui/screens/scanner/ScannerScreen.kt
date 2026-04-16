@@ -1,61 +1,58 @@
-package com.example.ecoscanner.ui.screens.scanner
+package com.example.ecoscanner.ui.screens
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.BarChart
-import androidx.compose.material.icons.filled.CameraAlt
-import androidx.compose.material.icons.outlined.Eco
+import androidx.compose.material.icons.filled.AccountCircle
+import androidx.compose.material.icons.filled.Menu
+import androidx.compose.material.icons.filled.QrCodeScanner
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-
-// ─── ScannerScreen ────────────────────────────────────────────────────────
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.rememberNavController
+import com.example.ecoscanner.navigation.Screen
+import com.example.ecoscanner.ui.theme.EcoScannerTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ScannerScreen(
-    onScanClick: () -> Unit,
-    onStatisticsClick: () -> Unit
-) {
+fun ScannerScreen(navController: NavHostController) {
     Scaffold(
         topBar = {
             TopAppBar(
                 title = {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(8.dp)
-                    ) {
-                        Icon(
-                            imageVector        = Icons.Outlined.Eco,
-                            contentDescription = null,
-                            tint               = MaterialTheme.colorScheme.primary,
-                            modifier           = Modifier.size(24.dp)
+                    Text(
+                        text = "EcoScanner",
+                        style = MaterialTheme.typography.titleLarge.copy(
+                            fontWeight = FontWeight.Bold,
+                            color = MaterialTheme.colorScheme.primary
                         )
-                        Text(
-                            text       = "EcoScanner",
-                            style      = MaterialTheme.typography.titleLarge.copy(
-                                fontWeight = FontWeight.Bold,
-                                color      = MaterialTheme.colorScheme.primary
-                            )
+                    )
+                },
+                navigationIcon = {
+                    IconButton(onClick = {}) {
+                        Icon(
+                            imageVector = Icons.Filled.Menu,
+                            contentDescription = "Menú",
+                            tint = MaterialTheme.colorScheme.onSurface
                         )
                     }
                 },
                 actions = {
-                    IconButton(onClick = onStatisticsClick) {
+                    IconButton(onClick = {}) {
                         Icon(
-                            imageVector        = Icons.Default.BarChart,
-                            contentDescription = "Ver estadísticas",
-                            tint               = MaterialTheme.colorScheme.primary,
-                            modifier           = Modifier.size(26.dp)
+                            imageVector = Icons.Filled.AccountCircle,
+                            contentDescription = "Perfil de usuario",
+                            tint = MaterialTheme.colorScheme.primary,
+                            modifier = Modifier.size(32.dp)
                         )
                     }
                 },
@@ -65,155 +62,104 @@ fun ScannerScreen(
             )
         }
     ) { innerPadding ->
-
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(innerPadding)
-                .padding(horizontal = 24.dp, vertical = 16.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.SpaceBetween
+                .padding(horizontal = 24.dp, vertical = 32.dp),
+            verticalArrangement = Arrangement.SpaceBetween,
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
 
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.spacedBy(8.dp)
+                verticalArrangement = Arrangement.spacedBy(24.dp)
             ) {
                 Text(
-                    text  = "Escanear producto",
-                    style = MaterialTheme.typography.headlineSmall.copy(
-                        fontWeight = FontWeight.Bold
-                    )
+                    text = "Apunta al codi de barres del producte",
+                    style = MaterialTheme.typography.bodyLarge,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    textAlign = TextAlign.Center
                 )
-                Text(
-                    text  = "Obtén la huella de carbono al instante",
-                    style = MaterialTheme.typography.bodyMedium.copy(
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-                )
+
+                // Viewfinder simulado de la cámara
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .aspectRatio(1f)
+                        .clip(RoundedCornerShape(16.dp))
+                        .background(MaterialTheme.colorScheme.surfaceVariant)
+                        .border(
+                            width = 3.dp,
+                            color = MaterialTheme.colorScheme.primary,
+                            shape = RoundedCornerShape(16.dp)
+                        ),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.spacedBy(16.dp)
+                    ) {
+                        Icon(
+                            imageVector = Icons.Filled.QrCodeScanner,
+                            contentDescription = "Escàner",
+                            tint = MaterialTheme.colorScheme.primary,
+                            modifier = Modifier.size(64.dp)
+                        )
+                        Text(
+                            text = "Escaneja el codi de barres",
+                            style = MaterialTheme.typography.bodyLarge,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            textAlign = TextAlign.Center,
+                            modifier = Modifier.padding(horizontal = 32.dp)
+                        )
+                    }
+                }
             }
 
-            // ── Viewfinder simulado de la cámara ──────────────────────────
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .aspectRatio(1f)           // Cuadrado perfecto
-                    .clip(RoundedCornerShape(24.dp))
-                    .background(Color(0xFF1A1A1A)),
-                contentAlignment = Alignment.Center
+            // Row de botones inferiores
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(16.dp)
             ) {
-                // Overlay de esquinas tipo viewfinder
-                CameraViewfinderOverlay()
-
-                Column(
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.spacedBy(16.dp)
+                OutlinedButton(
+                    onClick = { navController.navigate(Screen.Statistics.route) },
+                    modifier = Modifier
+                        .weight(1f)
+                        .height(56.dp),
+                    shape = MaterialTheme.shapes.medium
                 ) {
-                    Icon(
-                        imageVector        = Icons.Default.CameraAlt,
-                        contentDescription = "Cámara",
-                        tint               = Color.White.copy(alpha = 0.7f),
-                        modifier           = Modifier.size(72.dp)
-                    )
                     Text(
-                        text  = "Vista previa de cámara",
-                        style = MaterialTheme.typography.bodySmall.copy(
-                            color = Color.White.copy(alpha = 0.5f)
+                        text = "Historial",
+                        style = MaterialTheme.typography.titleSmall.copy(
+                            fontWeight = FontWeight.Medium
+                        )
+                    )
+                }
+
+                Button(
+                    onClick = { navController.navigate(Screen.Calculation.route) },
+                    modifier = Modifier
+                        .weight(1f)
+                        .height(56.dp),
+                    shape = MaterialTheme.shapes.medium
+                ) {
+                    Text(
+                        text = "Escanejar",
+                        style = MaterialTheme.typography.titleSmall.copy(
+                            fontWeight = FontWeight.Bold
                         )
                     )
                 }
             }
-
-            // ── Instrucción ───────────────────────────────────────────────
-            Text(
-                text      = "Apunta al código de barras del producto",
-                style     = MaterialTheme.typography.bodyLarge.copy(
-                    textAlign  = TextAlign.Center,
-                    color      = MaterialTheme.colorScheme.onSurfaceVariant
-                ),
-                modifier = Modifier.padding(horizontal = 16.dp)
-            )
-
-            // ── Botón Simular Escaneo ─────────────────────────────────────
-            Button(
-                onClick  = onScanClick,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(56.dp),
-                shape    = RoundedCornerShape(16.dp)
-            ) {
-                Icon(
-                    imageVector        = Icons.Default.CameraAlt,
-                    contentDescription = null,
-                    modifier           = Modifier.size(22.dp)
-                )
-                Spacer(modifier = Modifier.width(10.dp))
-                Text(
-                    text  = "Simular Escaneo",
-                    style = MaterialTheme.typography.titleMedium.copy(
-                        fontWeight = FontWeight.Bold
-                    )
-                )
-            }
-
-            Spacer(modifier = Modifier.height(8.dp))
         }
     }
 }
 
-// ── Overlay decorativo con esquinas tipo visor ────────────────────────────
-
+@Preview(showBackground = true)
 @Composable
-private fun CameraViewfinderOverlay() {
-    val cornerColor = MaterialTheme.colorScheme.primary
-    val cornerSize  = 40.dp
-    val strokeWidth = 4.dp
-
-    Box(modifier = Modifier.fillMaxSize().padding(24.dp)) {
-
-        // Esquina superior izquierda
-        Box(
-            modifier = Modifier
-                .align(Alignment.TopStart)
-                .size(cornerSize)
-                .border(
-                    width = strokeWidth,
-                    color = cornerColor,
-                    shape = RoundedCornerShape(topStart = 12.dp)
-                )
-        )
-        // Esquina superior derecha
-        Box(
-            modifier = Modifier
-                .align(Alignment.TopEnd)
-                .size(cornerSize)
-                .border(
-                    width = strokeWidth,
-                    color = cornerColor,
-                    shape = RoundedCornerShape(topEnd = 12.dp)
-                )
-        )
-        // Esquina inferior izquierda
-        Box(
-            modifier = Modifier
-                .align(Alignment.BottomStart)
-                .size(cornerSize)
-                .border(
-                    width = strokeWidth,
-                    color = cornerColor,
-                    shape = RoundedCornerShape(bottomStart = 12.dp)
-                )
-        )
-        // Esquina inferior derecha
-        Box(
-            modifier = Modifier
-                .align(Alignment.BottomEnd)
-                .size(cornerSize)
-                .border(
-                    width = strokeWidth,
-                    color = cornerColor,
-                    shape = RoundedCornerShape(bottomEnd = 12.dp)
-                )
-        )
+fun ScannerScreenPreview() {
+    EcoScannerTheme {
+        ScannerScreen(navController = rememberNavController())
     }
 }

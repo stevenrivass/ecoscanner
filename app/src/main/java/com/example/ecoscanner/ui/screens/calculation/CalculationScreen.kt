@@ -1,50 +1,50 @@
-package com.example.ecoscanner.ui.screens.calculation
+package com.example.ecoscanner.ui.screens
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.BookmarkAdd
-import androidx.compose.material.icons.outlined.*
+import androidx.compose.material.icons.filled.Apple
+import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Eco
+import androidx.compose.material.icons.filled.LocationOn
+import androidx.compose.material.icons.filled.Scale
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-
-// ─── CalculationScreen ────────────────────────────────────────────────────
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.rememberNavController
+import com.example.ecoscanner.navigation.Screen
+import com.example.ecoscanner.ui.theme.EcoScannerTheme
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CalculationScreen(
-    onBack: () -> Unit,
-    onSaveAndGoHome: () -> Unit
-) {
+fun CalculationScreen(navController: NavHostController) {
     Scaffold(
         topBar = {
             TopAppBar(
                 title = {
                     Text(
-                        text  = "Resultado del análisis",
+                        text = "EcoScanner",
                         style = MaterialTheme.typography.titleLarge.copy(
-                            fontWeight = FontWeight.Bold
+                            fontWeight = FontWeight.Bold,
+                            color = MaterialTheme.colorScheme.primary
                         )
                     )
                 },
                 navigationIcon = {
-                    IconButton(onClick = onBack) {
+                    IconButton(onClick = { navController.popBackStack() }) {
                         Icon(
-                            imageVector        = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "Volver atrás"
+                            imageVector = Icons.Filled.ArrowBack,
+                            contentDescription = "Enrere",
+                            tint = MaterialTheme.colorScheme.onSurface
                         )
                     }
                 },
@@ -54,269 +54,213 @@ fun CalculationScreen(
             )
         }
     ) { innerPadding ->
-
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(innerPadding)
-                .verticalScroll(rememberScrollState())
-                .padding(horizontal = 20.dp, vertical = 16.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(20.dp)
+                .padding(horizontal = 24.dp)
+                .verticalScroll(rememberScrollState()),
+            verticalArrangement = Arrangement.spacedBy(24.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
+            Spacer(modifier = Modifier.height(8.dp))
 
-            // ── Card de datos del producto ────────────────────────────────
+            // Tarjeta imagen producto
             Card(
-                modifier  = Modifier.fillMaxWidth(),
-                shape     = RoundedCornerShape(20.dp),
-                elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
-                colors    = CardDefaults.cardColors(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .aspectRatio(1f),
+                shape = RoundedCornerShape(20.dp),
+                colors = CardDefaults.cardColors(
                     containerColor = MaterialTheme.colorScheme.surfaceVariant
                 )
             ) {
-                Column(
-                    modifier = Modifier.padding(20.dp),
-                    verticalArrangement = Arrangement.spacedBy(12.dp)
+                Box(
+                    modifier = Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.Center
                 ) {
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.spacedBy(12.dp)
+                    ) {
+                        Icon(
+                            imageVector = Icons.Filled.Apple,
+                            contentDescription = "Imatge del producte",
+                            tint = MaterialTheme.colorScheme.primary,
+                            modifier = Modifier.size(96.dp)
+                        )
+                        Text(
+                            text = "Manzana Golden",
+                            style = MaterialTheme.typography.headlineSmall.copy(
+                                fontWeight = FontWeight.Medium,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        )
+                    }
+                }
+            }
+
+            // Card de detalles del producto
+            Card(
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(16.dp),
+                colors = CardDefaults.cardColors(
+                    containerColor = MaterialTheme.colorScheme.surface
+                ),
+                elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+            ) {
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(24.dp),
+                    verticalArrangement = Arrangement.spacedBy(20.dp)
+                ) {
+
+                    // Nombre del producto
                     Row(
-                        verticalAlignment = Alignment.CenterVertically,
+                        verticalAlignment = Alignment.Top,
                         horizontalArrangement = Arrangement.spacedBy(12.dp)
                     ) {
-                        Box(
-                            modifier = Modifier
-                                .size(48.dp)
-                                .clip(CircleShape)
-                                .background(MaterialTheme.colorScheme.primaryContainer),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Icon(
-                                imageVector        = Icons.Outlined.Eco,
-                                contentDescription = null,
-                                tint               = MaterialTheme.colorScheme.primary,
-                                modifier           = Modifier.size(28.dp)
-                            )
-                        }
+                        Icon(
+                            imageVector = Icons.Filled.Apple,
+                            contentDescription = null,
+                            tint = MaterialTheme.colorScheme.primary,
+                            modifier = Modifier.size(24.dp)
+                        )
                         Column {
                             Text(
-                                text  = "Producto identificado",
-                                style = MaterialTheme.typography.labelMedium.copy(
-                                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                                )
+                                text = "Nom producte",
+                                style = MaterialTheme.typography.labelMedium,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
                             Text(
-                                text  = "Manzana Golden",
-                                style = MaterialTheme.typography.titleLarge.copy(
-                                    fontWeight = FontWeight.ExtraBold
-                                )
+                                text = "Manzana Golden",
+                                style = MaterialTheme.typography.bodyLarge.copy(
+                                    fontWeight = FontWeight.Medium
+                                ),
+                                color = MaterialTheme.colorScheme.onSurface
                             )
                         }
                     }
 
-                    HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
+                    Divider(color = MaterialTheme.colorScheme.outlineVariant)
 
-                    // Fila de detalles
+                    // Distancia
                     Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        horizontalArrangement = Arrangement.SpaceEvenly
+                        verticalAlignment = Alignment.Top,
+                        horizontalArrangement = Arrangement.spacedBy(12.dp)
                     ) {
-                        ProductDetailItem(
-                            icon  = Icons.Outlined.Flag,
-                            label = "Origen",
-                            value = "Italia 🇮🇹"
+                        Icon(
+                            imageVector = Icons.Filled.LocationOn,
+                            contentDescription = null,
+                            tint = MaterialTheme.colorScheme.primary,
+                            modifier = Modifier.size(24.dp)
                         )
-                        VerticalDivider(
-                            modifier = Modifier.height(56.dp),
-                            color    = MaterialTheme.colorScheme.outlineVariant
+                        Column {
+                            Text(
+                                text = "Distància",
+                                style = MaterialTheme.typography.labelMedium,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                            Text(
+                                text = "1.200 km (Itàlia)",
+                                style = MaterialTheme.typography.bodyLarge.copy(
+                                    fontWeight = FontWeight.Medium
+                                ),
+                                color = MaterialTheme.colorScheme.onSurface
+                            )
+                        }
+                    }
+
+                    Divider(color = MaterialTheme.colorScheme.outlineVariant)
+
+                    // Petjada de carboni — destacado
+                    Row(
+                        verticalAlignment = Alignment.Top,
+                        horizontalArrangement = Arrangement.spacedBy(12.dp)
+                    ) {
+                        Icon(
+                            imageVector = Icons.Filled.Eco,
+                            contentDescription = null,
+                            tint = MaterialTheme.colorScheme.primary,
+                            modifier = Modifier.size(24.dp)
                         )
-                        ProductDetailItem(
-                            icon  = Icons.Outlined.Route,
-                            label = "Distancia",
-                            value = "1.200 km"
-                        )
-                        VerticalDivider(
-                            modifier = Modifier.height(56.dp),
-                            color    = MaterialTheme.colorScheme.outlineVariant
-                        )
-                        ProductDetailItem(
-                            icon  = Icons.Outlined.LocalShipping,
-                            label = "Transporte",
-                            value = "Terrestre"
-                        )
+                        Column {
+                            Text(
+                                text = "Petjada de Carboni",
+                                style = MaterialTheme.typography.labelMedium,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                            Text(
+                                text = "164g CO₂",
+                                style = MaterialTheme.typography.headlineMedium.copy(
+                                    fontWeight = FontWeight.Bold
+                                ),
+                                color = MaterialTheme.colorScheme.primary
+                            )
+                        }
                     }
                 }
             }
 
-            // ── Card destacada de CO2 ─────────────────────────────────────
-            Card(
-                modifier  = Modifier.fillMaxWidth(),
-                shape     = RoundedCornerShape(20.dp),
-                elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
-                colors    = CardDefaults.cardColors(
-                    containerColor = MaterialTheme.colorScheme.primaryContainer
-                )
-            ) {
-                Column(
-                    modifier            = Modifier
-                        .fillMaxWidth()
-                        .padding(28.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
-                    Icon(
-                        imageVector        = Icons.Outlined.Cloud,
-                        contentDescription = null,
-                        tint               = MaterialTheme.colorScheme.primary,
-                        modifier           = Modifier.size(40.dp)
-                    )
-                    Text(
-                        text  = "Huella de carbono estimada",
-                        style = MaterialTheme.typography.bodyMedium.copy(
-                            color = MaterialTheme.colorScheme.onPrimaryContainer
-                        )
-                    )
-                    Text(
-                        text      = "Contaminación:\n164g CO₂",
-                        style     = MaterialTheme.typography.displaySmall.copy(
-                            fontWeight = FontWeight.ExtraBold,
-                            color      = MaterialTheme.colorScheme.primary,
-                            textAlign  = TextAlign.Center,
-                            lineHeight = 44.sp
-                        )
-                    )
-                    Spacer(modifier = Modifier.height(4.dp))
-                    // Indicador visual de nivel
-                    Co2LevelIndicator(level = 0.35f)
-                    Text(
-                        text  = "Nivel: Moderado · Podría ser peor 🌱",
-                        style = MaterialTheme.typography.labelMedium.copy(
-                            color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.7f)
-                        )
-                    )
-                }
-            }
-
-            // ── Card de consejo ecológico ─────────────────────────────────
-            Card(
-                modifier  = Modifier.fillMaxWidth(),
-                shape     = RoundedCornerShape(20.dp),
-                elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
-                colors    = CardDefaults.cardColors(
-                    containerColor = MaterialTheme.colorScheme.tertiaryContainer
-                )
+            // Badge de valoración
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clip(RoundedCornerShape(12.dp))
+                    .background(MaterialTheme.colorScheme.primaryContainer)
+                    .padding(16.dp),
+                contentAlignment = Alignment.Center
             ) {
                 Row(
-                    modifier = Modifier.padding(16.dp),
-                    horizontalArrangement = Arrangement.spacedBy(12.dp),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Icon(
-                        imageVector        = Icons.Outlined.Lightbulb,
+                        imageVector = Icons.Filled.Scale,
                         contentDescription = null,
-                        tint               = MaterialTheme.colorScheme.tertiary,
-                        modifier           = Modifier.size(28.dp)
+                        tint = MaterialTheme.colorScheme.onPrimaryContainer,
+                        modifier = Modifier.size(20.dp)
                     )
                     Text(
-                        text  = "Consejo: Busca manzanas de España o Portugal para reducir tu huella hasta un 80%.",
-                        style = MaterialTheme.typography.bodySmall.copy(
-                            color = MaterialTheme.colorScheme.onTertiaryContainer
-                        )
+                        text = "Impacte moderat — podeu millorar!",
+                        style = MaterialTheme.typography.bodyMedium.copy(
+                            fontWeight = FontWeight.Medium
+                        ),
+                        color = MaterialTheme.colorScheme.onPrimaryContainer
                     )
                 }
             }
 
-            Spacer(modifier = Modifier.height(4.dp))
-
-            // ── Botón guardar ─────────────────────────────────────────────
+            // Botón volver
             Button(
-                onClick  = onSaveAndGoHome,
+                onClick = {
+                    navController.navigate(Screen.Scanner.route) {
+                        popUpTo(Screen.Scanner.route) { inclusive = false }
+                    }
+                },
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(56.dp),
-                shape    = RoundedCornerShape(16.dp)
+                shape = MaterialTheme.shapes.medium
             ) {
-                Icon(
-                    imageVector        = Icons.Default.BookmarkAdd,
-                    contentDescription = null,
-                    modifier           = Modifier.size(22.dp)
-                )
-                Spacer(modifier = Modifier.width(10.dp))
                 Text(
-                    text  = "Guardar en mi Historial",
+                    text = "Tornar a l'inici",
                     style = MaterialTheme.typography.titleMedium.copy(
                         fontWeight = FontWeight.Bold
                     )
                 )
             }
 
-            // Botón secundario para volver sin guardar
-            OutlinedButton(
-                onClick  = onBack,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(48.dp),
-                shape    = RoundedCornerShape(16.dp)
-            ) {
-                Text(
-                    text  = "Descartar",
-                    style = MaterialTheme.typography.titleSmall
-                )
-            }
-
-            Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(16.dp))
         }
     }
 }
 
-// ── Componente auxiliar: detalle del producto ─────────────────────────────
-
+@Preview(showBackground = true)
 @Composable
-private fun ProductDetailItem(
-    icon: ImageVector,
-    label: String,
-    value: String
-) {
-    Column(
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.spacedBy(4.dp)
-    ) {
-        Icon(
-            imageVector        = icon,
-            contentDescription = null,
-            tint               = MaterialTheme.colorScheme.primary,
-            modifier           = Modifier.size(22.dp)
-        )
-        Text(
-            text  = label,
-            style = MaterialTheme.typography.labelSmall.copy(
-                color = MaterialTheme.colorScheme.onSurfaceVariant
-            )
-        )
-        Text(
-            text  = value,
-            style = MaterialTheme.typography.bodyMedium.copy(
-                fontWeight = FontWeight.SemiBold
-            )
-        )
-    }
-}
-
-// ── Componente auxiliar: barra de nivel CO2 ───────────────────────────────
-
-@Composable
-private fun Co2LevelIndicator(level: Float) {
-    Box(
-        modifier = Modifier
-            .fillMaxWidth()
-            .height(8.dp)
-            .clip(RoundedCornerShape(50))
-            .background(MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.15f))
-    ) {
-        Box(
-            modifier = Modifier
-                .fillMaxWidth(fraction = level.coerceIn(0f, 1f))
-                .fillMaxHeight()
-                .clip(RoundedCornerShape(50))
-                .background(MaterialTheme.colorScheme.primary)
-        )
+fun CalculationScreenPreview() {
+    EcoScannerTheme {
+        CalculationScreen(navController = rememberNavController())
     }
 }

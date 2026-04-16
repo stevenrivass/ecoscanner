@@ -1,101 +1,61 @@
-package com.example.ecoscanner.ui.screens.statistics
+package com.example.ecoscanner.ui.screens
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.outlined.*
+import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Eco
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavHostController
+import androidx.navigation.compose.rememberNavController
+import com.example.ecoscanner.ui.theme.EcoScannerTheme
 
-// ─── Mock Data ────────────────────────────────────────────────────────────
-
-data class ProductHistory(
+// --- Mock Data ---
+data class ProductHistoryItem(
     val name: String,
     val country: String,
-    val flag: String,
-    val co2Grams: Int,
-    val distance: String,
-    val icon: ImageVector,
-    val co2Level: Co2Level            // Para el color del badge
+    val distanceKm: Int,
+    val co2Grams: Int
 )
 
-enum class Co2Level { LOW, MEDIUM, HIGH }
-
-private val mockHistory = listOf(
-    ProductHistory(
-        name     = "Manzana Golden",
-        country  = "Italia",
-        flag     = "🇮🇹",
-        co2Grams = 164,
-        distance = "1.200 km",
-        icon     = Icons.Outlined.Eco,
-        co2Level = Co2Level.MEDIUM
-    ),
-    ProductHistory(
-        name     = "Leche Entera Bio",
-        country  = "España",
-        flag     = "🇪🇸",
-        co2Grams = 22,
-        distance = "85 km",
-        icon     = Icons.Outlined.WaterDrop,
-        co2Level = Co2Level.LOW
-    ),
-    ProductHistory(
-        name     = "Plátano de Canarias",
-        country  = "España",
-        flag     = "🇪🇸",
-        co2Grams = 18,
-        distance = "65 km",
-        icon     = Icons.Outlined.Spa,
-        co2Level = Co2Level.LOW
-    ),
-    ProductHistory(
-        name     = "Salmón Noruego",
-        country  = "Noruega",
-        flag     = "🇳🇴",
-        co2Grams = 246,
-        distance = "2.700 km",
-        icon     = Icons.Outlined.SetMeal,
-        co2Level = Co2Level.HIGH
-    )
+val mockProductHistory = listOf(
+    ProductHistoryItem("Manzana Golden", "Itàlia", 1200, 164),
+    ProductHistoryItem("Tomàquet Cherry", "Espanya (Almeria)", 850, 116),
+    ProductHistoryItem("Plàtan", "Equador", 9400, 1286),
+    ProductHistoryItem("Llimona", "Argentina", 11300, 1547)
 )
 
-// ─── StatisticsScreen ─────────────────────────────────────────────────────
-
+// --- Composable principal ---
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun StatisticsScreen(
-    onBack: () -> Unit
-) {
-    val totalCo2 = mockHistory.sumOf { it.co2Grams }     // 450 g
+fun StatisticsScreen(navController: NavHostController) {
+    val totalCo2 = mockProductHistory.sumOf { it.co2Grams }
 
     Scaffold(
         topBar = {
             TopAppBar(
                 title = {
                     Text(
-                        text  = "Mi historial",
+                        text = "Historial",
                         style = MaterialTheme.typography.titleLarge.copy(
                             fontWeight = FontWeight.Bold
                         )
                     )
                 },
                 navigationIcon = {
-                    IconButton(onClick = onBack) {
+                    IconButton(onClick = { navController.popBackStack() }) {
                         Icon(
-                            imageVector        = Icons.AutoMirrored.Filled.ArrowBack,
-                            contentDescription = "Volver atrás"
+                            imageVector = Icons.Filled.ArrowBack,
+                            contentDescription = "Tornar enrere",
+                            tint = MaterialTheme.colorScheme.onSurface
                         )
                     }
                 },
@@ -105,211 +65,135 @@ fun StatisticsScreen(
             )
         }
     ) { innerPadding ->
-
         LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(innerPadding)
-                .padding(horizontal = 16.dp),
-            verticalArrangement = Arrangement.spacedBy(12.dp),
-            contentPadding      = PaddingValues(vertical = 16.dp)
+                .padding(horizontal = 24.dp),
+            verticalArrangement = Arrangement.spacedBy(16.dp),
+            contentPadding = PaddingValues(vertical = 24.dp)
         ) {
 
-            // ── Cabecera de resumen ───────────────────────────────────────
+            // Banner de resumen mensual
             item {
-                SummaryCard(totalCo2 = totalCo2)
-            }
-
-            // ── Título de sección ─────────────────────────────────────────
-            item {
-                Row(
-                    modifier             = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 4.dp),
-                    verticalAlignment    = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.SpaceBetween
+                Card(
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(16.dp),
+                    colors = CardDefaults.cardColors(
+                        containerColor = MaterialTheme.colorScheme.primaryContainer
+                    )
                 ) {
-                    Text(
-                        text  = "Productos escaneados",
-                        style = MaterialTheme.typography.titleMedium.copy(
-                            fontWeight = FontWeight.SemiBold
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(20.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(16.dp)
+                    ) {
+                        Icon(
+                            imageVector = Icons.Filled.Eco,
+                            contentDescription = null,
+                            tint = MaterialTheme.colorScheme.primary,
+                            modifier = Modifier.size(40.dp)
                         )
-                    )
-                    Text(
-                        text  = "${mockHistory.size} items",
-                        style = MaterialTheme.typography.labelMedium.copy(
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
-                        )
-                    )
+                        Column {
+                            Text(
+                                text = "Resum del mes",
+                                style = MaterialTheme.typography.labelLarge,
+                                color = MaterialTheme.colorScheme.onPrimaryContainer
+                            )
+                            Text(
+                                text = "Has emès ${totalCo2}g de CO₂",
+                                style = MaterialTheme.typography.titleMedium.copy(
+                                    fontWeight = FontWeight.Bold
+                                ),
+                                color = MaterialTheme.colorScheme.onPrimaryContainer
+                            )
+                        }
+                    }
                 }
             }
 
-            // ── Lista de productos ────────────────────────────────────────
-            items(mockHistory) { product ->
+            // Encabezado de lista
+            item {
+                Text(
+                    text = "Productes escanejats",
+                    style = MaterialTheme.typography.titleSmall.copy(
+                        fontWeight = FontWeight.Medium
+                    ),
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier.padding(vertical = 4.dp)
+                )
+            }
+
+            // Lista de productos
+            items(mockProductHistory) { product ->
                 ProductHistoryCard(product = product)
             }
 
-            // ── Footer informativo ────────────────────────────────────────
-            item {
-                Spacer(modifier = Modifier.height(4.dp))
-                Text(
-                    text  = "💡 Un adulto produce ~2.500g CO₂ al día en alimentación.",
-                    style = MaterialTheme.typography.bodySmall.copy(
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    ),
-                    modifier = Modifier.padding(horizontal = 4.dp)
-                )
-                Spacer(modifier = Modifier.height(8.dp))
-            }
+            item { Spacer(modifier = Modifier.height(8.dp)) }
         }
     }
 }
 
-// ── Card de resumen total ─────────────────────────────────────────────────
-
+// --- Card de cada producto del historial ---
 @Composable
-private fun SummaryCard(totalCo2: Int) {
+fun ProductHistoryCard(product: ProductHistoryItem) {
     Card(
-        modifier  = Modifier.fillMaxWidth(),
-        shape     = RoundedCornerShape(20.dp),
-        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
-        colors    = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.primaryContainer
-        )
+        modifier = Modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(16.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surface
+        ),
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(20.dp),
-            verticalAlignment    = Alignment.CenterVertically,
+                .padding(horizontal = 20.dp, vertical = 16.dp),
+            verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+            Column(
+                verticalArrangement = Arrangement.spacedBy(4.dp),
+                modifier = Modifier.weight(1f)
+            ) {
                 Text(
-                    text  = "Este mes has emitido",
-                    style = MaterialTheme.typography.bodyMedium.copy(
-                        color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.75f)
-                    )
+                    text = product.name,
+                    style = MaterialTheme.typography.bodyLarge.copy(
+                        fontWeight = FontWeight.SemiBold
+                    ),
+                    color = MaterialTheme.colorScheme.onSurface
                 )
                 Text(
-                    text  = "${totalCo2}g de CO₂",
-                    style = MaterialTheme.typography.headlineMedium.copy(
-                        fontWeight = FontWeight.ExtraBold,
-                        color      = MaterialTheme.colorScheme.primary
-                    )
-                )
-                Text(
-                    text  = "en ${mockHistory.size} productos escaneados",
-                    style = MaterialTheme.typography.labelMedium.copy(
-                        color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.6f)
-                    )
+                    text = "${product.country} · ${product.distanceKm} km",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
 
-            Box(
-                modifier = Modifier
-                    .size(64.dp)
-                    .clip(CircleShape)
-                    .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.15f)),
-                contentAlignment = Alignment.Center
+            // Badge CO2
+            Surface(
+                shape = RoundedCornerShape(8.dp),
+                color = MaterialTheme.colorScheme.primaryContainer
             ) {
-                Icon(
-                    imageVector        = Icons.Outlined.BarChart,
-                    contentDescription = null,
-                    tint               = MaterialTheme.colorScheme.primary,
-                    modifier           = Modifier.size(36.dp)
+                Text(
+                    text = "${product.co2Grams}g CO₂",
+                    style = MaterialTheme.typography.labelLarge.copy(
+                        fontWeight = FontWeight.Bold
+                    ),
+                    color = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier.padding(horizontal = 12.dp, vertical = 6.dp)
                 )
             }
         }
     }
 }
 
-// ── Card de cada producto del historial ───────────────────────────────────
-
+@Preview(showBackground = true)
 @Composable
-private fun ProductHistoryCard(product: ProductHistory) {
-    val (badgeColor, badgeText) = when (product.co2Level) {
-        Co2Level.LOW    -> Pair(MaterialTheme.colorScheme.tertiary,        "Bajo")
-        Co2Level.MEDIUM -> Pair(MaterialTheme.colorScheme.secondary,       "Medio")
-        Co2Level.HIGH   -> Pair(MaterialTheme.colorScheme.error,           "Alto")
-    }
-
-    Card(
-        modifier  = Modifier.fillMaxWidth(),
-        shape     = RoundedCornerShape(16.dp),
-        elevation = CardDefaults.cardElevation(defaultElevation = 1.dp),
-        colors    = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surface
-        )
-    ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp),
-            verticalAlignment    = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(14.dp)
-        ) {
-            // Icono del producto
-            Box(
-                modifier = Modifier
-                    .size(48.dp)
-                    .clip(CircleShape)
-                    .background(MaterialTheme.colorScheme.secondaryContainer),
-                contentAlignment = Alignment.Center
-            ) {
-                Icon(
-                    imageVector        = product.icon,
-                    contentDescription = null,
-                    tint               = MaterialTheme.colorScheme.secondary,
-                    modifier           = Modifier.size(26.dp)
-                )
-            }
-
-            // Datos del producto
-            Column(
-                modifier = Modifier.weight(1f),
-                verticalArrangement = Arrangement.spacedBy(2.dp)
-            ) {
-                Text(
-                    text  = product.name,
-                    style = MaterialTheme.typography.bodyLarge.copy(
-                        fontWeight = FontWeight.SemiBold
-                    )
-                )
-                Text(
-                    text  = "${product.flag} ${product.country}  ·  ${product.distance}",
-                    style = MaterialTheme.typography.bodySmall.copy(
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-                )
-            }
-
-            // CO2 + badge de nivel
-            Column(
-                horizontalAlignment = Alignment.End,
-                verticalArrangement = Arrangement.spacedBy(4.dp)
-            ) {
-                Text(
-                    text  = "${product.co2Grams}g",
-                    style = MaterialTheme.typography.titleMedium.copy(
-                        fontWeight = FontWeight.Bold,
-                        color      = MaterialTheme.colorScheme.primary
-                    )
-                )
-                Surface(
-                    shape = RoundedCornerShape(50),
-                    color = badgeColor.copy(alpha = 0.15f)
-                ) {
-                    Text(
-                        text     = badgeText,
-                        modifier = Modifier.padding(horizontal = 8.dp, vertical = 2.dp),
-                        style    = MaterialTheme.typography.labelSmall.copy(
-                            color      = badgeColor,
-                            fontWeight = FontWeight.Bold
-                        )
-                    )
-                }
-            }
-        }
+fun StatisticsScreenPreview() {
+    EcoScannerTheme {
+        StatisticsScreen(navController = rememberNavController())
     }
 }

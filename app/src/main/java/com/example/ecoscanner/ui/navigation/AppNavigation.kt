@@ -1,72 +1,49 @@
-
-package com.example.ecoscanner.ui.navigation
+package com.example.ecoscanner.navigation
 
 import androidx.compose.runtime.Composable
+import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.example.ecoscanner.ui.screens.calculation.CalculationScreen
-import com.example.ecoscanner.ui.screens.scanner.ScannerScreen
-import com.example.ecoscanner.ui.screens.statistics.StatisticsScreen
+import androidx.compose.ui.tooling.preview.Preview
+import com.example.ecoscanner.ui.screens.CalculationScreen
+import com.example.ecoscanner.ui.screens.LoginScreen
+import com.example.ecoscanner.ui.screens.ScannerScreen
+import com.example.ecoscanner.ui.screens.StatisticsScreen
+import com.example.ecoscanner.ui.theme.EcoScannerTheme
 
-// ─── Rutas de navegación ───────────────────────────────────────────────────
-
-object Routes {
-    const val LOGIN      = "login"
-    const val SCANNER    = "scanner"
-    const val CALCULATION = "calculation"
-    const val STATISTICS = "statistics"
+sealed class Screen(val route: String) {
+    object Login : Screen("login")
+    object Scanner : Screen("scanner")
+    object Calculation : Screen("calculation")
+    object Statistics : Screen("statistics")
 }
 
-// ─── Grafo de navegación principal ────────────────────────────────────────
-
 @Composable
-fun AppNavigation() {
-    val navController = rememberNavController()
-
+fun AppNavigation(navController: NavHostController = rememberNavController()) {
     NavHost(
-        navController    = navController,
-        startDestination = Routes.LOGIN
+        navController = navController,
+        startDestination = Screen.Login.route
     ) {
-
-        composable(Routes.LOGIN) {
-            LoginScreen(
-                onLoginSuccess = {
-                    navController.navigate(Routes.SCANNER) {
-                        // Elimina Login del back-stack para que "atrás" no regrese
-                        popUpTo(Routes.LOGIN) { inclusive = true }
-                    }
-                }
-            )
+        composable(Screen.Login.route) {
+            LoginScreen(navController = navController)
         }
-
-        composable(Routes.SCANNER) {
-            ScannerScreen(
-                onScanClick       = { navController.navigate(Routes.CALCULATION) },
-                onStatisticsClick = { navController.navigate(Routes.STATISTICS) }
-            )
+        composable(Screen.Scanner.route) {
+            ScannerScreen(navController = navController)
         }
-
-        composable(Routes.CALCULATION) {
-            CalculationScreen(
-                onBack       = { navController.popBackStack() },
-                onSaveAndGoHome = {
-                    navController.navigate(Routes.SCANNER) {
-                        popUpTo(Routes.SCANNER) { inclusive = true }
-                    }
-                }
-            )
+        composable(Screen.Calculation.route) {
+            CalculationScreen(navController = navController)
         }
-
-        composable(Routes.STATISTICS) {
-            StatisticsScreen(
-                onBack = { navController.popBackStack() }
-            )
+        composable(Screen.Statistics.route) {
+            StatisticsScreen(navController = navController)
         }
     }
 }
 
+@Preview(showBackground = true)
 @Composable
-fun LoginScreen(onLoginSuccess: () -> Unit) {
-    TODO("Not yet implemented")
+fun AppNavigationPreview() {
+    EcoScannerTheme {
+        AppNavigation(navController = rememberNavController())
+    }
 }
