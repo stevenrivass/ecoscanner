@@ -1,9 +1,11 @@
 package com.example.ecoscanner.ui.navigation
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.example.ecoscanner.data.repository.AuthRepository
 import com.example.ecoscanner.ui.screens.calculation.CalculationScreen
 import com.example.ecoscanner.ui.screens.login.LoginScreen
 import com.example.ecoscanner.ui.screens.scanner.ScannerScreen
@@ -22,9 +24,13 @@ object Routes {
 fun AppNavigation() {
     val navController = rememberNavController()
 
+    // Si ya hay sesión activa, saltamos al Scanner directamente
+    val authRepo = remember { AuthRepository() }
+    val startRoute = if (authRepo.currentUser() != null) Routes.SCANNER else Routes.LOGIN
+
     NavHost(
         navController = navController,
-        startDestination = Routes.LOGIN
+        startDestination = startRoute
     ) {
         composable(Routes.LOGIN) {
             LoginScreen(navController)

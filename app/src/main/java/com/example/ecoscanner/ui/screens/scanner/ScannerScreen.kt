@@ -43,6 +43,7 @@ import com.google.mlkit.vision.barcode.common.Barcode
 import com.google.mlkit.vision.common.InputImage
 import java.util.concurrent.Executors
 
+
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalPermissionsApi::class)
 @Composable
 fun ScannerScreen(
@@ -108,8 +109,13 @@ fun ScannerScreen(
                     )
                 },
                 navigationIcon = {
-                    IconButton(onClick = {}) {
-                        Icon(Icons.Filled.Menu, contentDescription = "Menú")
+                    IconButton(onClick = {
+                        com.example.ecoscanner.data.repository.AuthRepository().logout()
+                        navController.navigate(Routes.LOGIN) {
+                            popUpTo(Routes.SCANNER) { inclusive = true }
+                        }
+                    }) {
+                        Icon(Icons.Filled.Menu, contentDescription = "Cerrar sesión")
                     }
                 },
                 actions = {
