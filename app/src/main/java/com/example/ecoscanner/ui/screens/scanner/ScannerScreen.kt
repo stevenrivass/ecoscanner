@@ -1,219 +1,335 @@
 package com.example.ecoscanner.ui.screens.scanner
 
+import android.Manifest
+import android.annotation.SuppressLint
+import android.content.Context
+import android.util.Log
+import androidx.camera.core.CameraSelector
+import androidx.camera.core.ImageAnalysis
+import androidx.camera.core.Preview
+import androidx.camera.lifecycle.ProcessCameraProvider
+import androidx.camera.view.PreviewView
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.BarChart
-import androidx.compose.material.icons.filled.CameraAlt
-import androidx.compose.material.icons.outlined.Eco
+import androidx.compose.material.icons.filled.AccountCircle
+import androidx.compose.material.icons.filled.Menu
+import androidx.compose.material.icons.filled.QrCodeScanner
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalLifecycleOwner
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.viewinterop.AndroidView
+import androidx.core.content.ContextCompat
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavHostController
+import com.example.ecoscanner.ui.navigation.Routes
+import com.google.accompanist.permissions.ExperimentalPermissionsApi
+import com.google.accompanist.permissions.rememberMultiplePermissionsState
+import com.google.android.gms.location.LocationServices
+import com.google.android.gms.location.Priority
+import com.google.mlkit.vision.barcode.BarcodeScannerOptions
+import com.google.mlkit.vision.barcode.BarcodeScanning
+import com.google.mlkit.vision.barcode.common.Barcode
+import com.google.mlkit.vision.common.InputImage
+import java.util.concurrent.Executors
 
-// ─── ScannerScreen ────────────────────────────────────────────────────────
-
-@OptIn(ExperimentalMaterial3Api::class)
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalPermissionsApi::class)
 @Composable
 fun ScannerScreen(
-    onScanClick: () -> Unit,
-    onStatisticsClick: () -> Unit
+    navController: NavHostController,
+    viewModel: ScannerViewModel = viewModel()
 ) {
+    val context = LocalContext.current
+    val state by viewModel.state.collectAsStateWithLifecycle()
+
+    // -------- Permisos en runtime --------
+    val permissionsState = rememberMultiplePermissionsState(
+        permissions = listOf(
+            Manifest.permission.CAMERA,
+            Manifest.permission.ACCESS_FINE_LOCATION
+        )
+    )
+
+    LaunchedEffect(Unit) {
+        if (!permissionsState.allPermissionsGranted) {
+            permissionsState.launchMultiplePermissionRequest()
+        }
+    }
+
+    // -------- GPS del usuario --------
+    var userLat by remember { mutableStateOf<Double?>(null) }
+    var userLon by remember { mutableStateOf<Double?>(null) }
+
+    LaunchedEffect(permissionsState.allPermissionsGranted) {
+        if (permissionsState.allPermissionsGranted) {
+            fetchUserLocation(context) { lat, lon ->
+                userLat = lat
+                userLon = lon
+            }
+        }
+    }
+
+    // -------- Navegación cuando hay resultado --------
+    LaunchedEffect(state) {
+        val s = state
+        if (s is ScanUiState.Success) {
+            navController.currentBackStackEntry?.savedStateHandle?.apply {
+                set("productName", s.productName)
+                set("origin", s.origin)
+                set("imageUrl", s.imageUrl ?: "")
+                set("userLat", s.userLat)
+                set("userLon", s.userLon)
+            }
+            navController.navigate(Routes.CALCULATION)
+            viewModel.reset()
+        }
+    }
+
     Scaffold(
         topBar = {
             TopAppBar(
                 title = {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(8.dp)
-                    ) {
-                        Icon(
-                            imageVector        = Icons.Outlined.Eco,
-                            contentDescription = null,
-                            tint               = MaterialTheme.colorScheme.primary,
-                            modifier           = Modifier.size(24.dp)
+                    Text(
+                        text = "EcoScanner",
+                        style = MaterialTheme.typography.titleLarge.copy(
+                            fontWeight = FontWeight.Bold,
+                            color = MaterialTheme.colorScheme.primary
                         )
-                        Text(
-                            text       = "EcoScanner",
-                            style      = MaterialTheme.typography.titleLarge.copy(
-                                fontWeight = FontWeight.Bold,
-                                color      = MaterialTheme.colorScheme.primary
-                            )
-                        )
+                    )
+                },
+                navigationIcon = {
+                    IconButton(onClick = {}) {
+                        Icon(Icons.Filled.Menu, contentDescription = "Menú")
                     }
                 },
                 actions = {
-                    IconButton(onClick = onStatisticsClick) {
+                    IconButton(onClick = { navController.navigate(Routes.STATISTICS) }) {
                         Icon(
-                            imageVector        = Icons.Default.BarChart,
-                            contentDescription = "Ver estadísticas",
-                            tint               = MaterialTheme.colorScheme.primary,
-                            modifier           = Modifier.size(26.dp)
+                            imageVector = Icons.Filled.AccountCircle,
+                            contentDescription = "Perfil",
+                            tint = MaterialTheme.colorScheme.primary,
+                            modifier = Modifier.size(32.dp)
                         )
                     }
-                },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.surface
-                )
+                }
             )
         }
     ) { innerPadding ->
-
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(innerPadding)
-                .padding(horizontal = 24.dp, vertical = 16.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.SpaceBetween
+                .padding(horizontal = 24.dp, vertical = 32.dp),
+            verticalArrangement = Arrangement.SpaceBetween,
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
-
             Column(
                 horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.spacedBy(8.dp)
+                verticalArrangement = Arrangement.spacedBy(24.dp)
             ) {
                 Text(
-                    text  = "Escanear producto",
-                    style = MaterialTheme.typography.headlineSmall.copy(
-                        fontWeight = FontWeight.Bold
-                    )
+                    text = "Apunta al codi de barres del producte",
+                    style = MaterialTheme.typography.bodyLarge,
+                    textAlign = TextAlign.Center
                 )
-                Text(
-                    text  = "Obtén la huella de carbono al instante",
-                    style = MaterialTheme.typography.bodyMedium.copy(
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-                )
-            }
 
-            // ── Viewfinder simulado de la cámara ──────────────────────────
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .aspectRatio(1f)           // Cuadrado perfecto
-                    .clip(RoundedCornerShape(24.dp))
-                    .background(Color(0xFF1A1A1A)),
-                contentAlignment = Alignment.Center
-            ) {
-                // Overlay de esquinas tipo viewfinder
-                CameraViewfinderOverlay()
-
-                Column(
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.spacedBy(16.dp)
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .aspectRatio(1f)
+                        .clip(RoundedCornerShape(16.dp))
+                        .background(MaterialTheme.colorScheme.surfaceVariant)
+                        .border(3.dp, MaterialTheme.colorScheme.primary, RoundedCornerShape(16.dp)),
+                    contentAlignment = Alignment.Center
                 ) {
-                    Icon(
-                        imageVector        = Icons.Default.CameraAlt,
-                        contentDescription = "Cámara",
-                        tint               = Color.White.copy(alpha = 0.7f),
-                        modifier           = Modifier.size(72.dp)
-                    )
+                    when {
+                        !permissionsState.allPermissionsGranted -> {
+                            Column(
+                                horizontalAlignment = Alignment.CenterHorizontally,
+                                verticalArrangement = Arrangement.spacedBy(12.dp)
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Filled.QrCodeScanner,
+                                    contentDescription = null,
+                                    tint = MaterialTheme.colorScheme.primary,
+                                    modifier = Modifier.size(64.dp)
+                                )
+                                Text(
+                                    "Es necessiten permisos de càmera i ubicació",
+                                    textAlign = TextAlign.Center
+                                )
+                                Button(onClick = { permissionsState.launchMultiplePermissionRequest() }) {
+                                    Text("Concedir permisos")
+                                }
+                            }
+                        }
+
+                        state is ScanUiState.Loading -> {
+                            Column(
+                                horizontalAlignment = Alignment.CenterHorizontally,
+                                verticalArrangement = Arrangement.spacedBy(12.dp)
+                            ) {
+                                CircularProgressIndicator()
+                                Text("Consultant producte…")
+                            }
+                        }
+
+                        else -> {
+                            CameraPreviewWithScanner(
+                                onBarcodeDetected = { barcode ->
+                                    viewModel.onBarcodeScanned(barcode, userLat, userLon)
+                                }
+                            )
+                        }
+                    }
+                }
+
+                if (state is ScanUiState.Error) {
                     Text(
-                        text  = "Vista previa de cámara",
-                        style = MaterialTheme.typography.bodySmall.copy(
-                            color = Color.White.copy(alpha = 0.5f)
-                        )
+                        text = (state as ScanUiState.Error).message,
+                        color = MaterialTheme.colorScheme.error,
+                        textAlign = TextAlign.Center
                     )
+                    TextButton(onClick = { viewModel.reset() }) {
+                        Text("Tornar a provar")
+                    }
                 }
             }
 
-            // ── Instrucción ───────────────────────────────────────────────
-            Text(
-                text      = "Apunta al código de barras del producto",
-                style     = MaterialTheme.typography.bodyLarge.copy(
-                    textAlign  = TextAlign.Center,
-                    color      = MaterialTheme.colorScheme.onSurfaceVariant
-                ),
-                modifier = Modifier.padding(horizontal = 16.dp)
-            )
-
-            // ── Botón Simular Escaneo ─────────────────────────────────────
-            Button(
-                onClick  = onScanClick,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(56.dp),
-                shape    = RoundedCornerShape(16.dp)
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(16.dp)
             ) {
-                Icon(
-                    imageVector        = Icons.Default.CameraAlt,
-                    contentDescription = null,
-                    modifier           = Modifier.size(22.dp)
-                )
-                Spacer(modifier = Modifier.width(10.dp))
-                Text(
-                    text  = "Simular Escaneo",
-                    style = MaterialTheme.typography.titleMedium.copy(
-                        fontWeight = FontWeight.Bold
-                    )
-                )
-            }
+                OutlinedButton(
+                    onClick = { navController.navigate(Routes.STATISTICS) },
+                    modifier = Modifier
+                        .weight(1f)
+                        .height(56.dp),
+                    shape = MaterialTheme.shapes.medium
+                ) {
+                    Text("Historial")
+                }
 
-            Spacer(modifier = Modifier.height(8.dp))
+                Button(
+                    onClick = { /* el escaneo es automático al detectar */ },
+                    modifier = Modifier
+                        .weight(1f)
+                        .height(56.dp),
+                    shape = MaterialTheme.shapes.medium
+                ) {
+                    Text("Escanejar", fontWeight = FontWeight.Bold)
+                }
+            }
         }
     }
 }
 
-// ── Overlay decorativo con esquinas tipo visor ────────────────────────────
+// ----------------- Cámara + ML Kit -----------------
 
 @Composable
-private fun CameraViewfinderOverlay() {
-    val cornerColor = MaterialTheme.colorScheme.primary
-    val cornerSize  = 40.dp
-    val strokeWidth = 4.dp
+private fun CameraPreviewWithScanner(
+    onBarcodeDetected: (String) -> Unit
+) {
+    val context = LocalContext.current
+    val lifecycleOwner = LocalLifecycleOwner.current
 
-    Box(modifier = Modifier.fillMaxSize().padding(24.dp)) {
+    AndroidView(
+        modifier = Modifier.fillMaxSize(),
+        factory = { ctx ->
+            val previewView = PreviewView(ctx).apply {
+                scaleType = PreviewView.ScaleType.FILL_CENTER
+            }
+            val cameraProviderFuture = ProcessCameraProvider.getInstance(ctx)
 
-        // Esquina superior izquierda
-        Box(
-            modifier = Modifier
-                .align(Alignment.TopStart)
-                .size(cornerSize)
-                .border(
-                    width = strokeWidth,
-                    color = cornerColor,
-                    shape = RoundedCornerShape(topStart = 12.dp)
-                )
-        )
-        // Esquina superior derecha
-        Box(
-            modifier = Modifier
-                .align(Alignment.TopEnd)
-                .size(cornerSize)
-                .border(
-                    width = strokeWidth,
-                    color = cornerColor,
-                    shape = RoundedCornerShape(topEnd = 12.dp)
-                )
-        )
-        // Esquina inferior izquierda
-        Box(
-            modifier = Modifier
-                .align(Alignment.BottomStart)
-                .size(cornerSize)
-                .border(
-                    width = strokeWidth,
-                    color = cornerColor,
-                    shape = RoundedCornerShape(bottomStart = 12.dp)
-                )
-        )
-        // Esquina inferior derecha
-        Box(
-            modifier = Modifier
-                .align(Alignment.BottomEnd)
-                .size(cornerSize)
-                .border(
-                    width = strokeWidth,
-                    color = cornerColor,
-                    shape = RoundedCornerShape(bottomEnd = 12.dp)
-                )
-        )
+            cameraProviderFuture.addListener({
+                val cameraProvider = cameraProviderFuture.get()
+
+                val preview = Preview.Builder().build().also {
+                    it.setSurfaceProvider(previewView.surfaceProvider)
+                }
+
+                val options = BarcodeScannerOptions.Builder()
+                    .setBarcodeFormats(
+                        Barcode.FORMAT_EAN_13,
+                        Barcode.FORMAT_EAN_8,
+                        Barcode.FORMAT_UPC_A,
+                        Barcode.FORMAT_UPC_E,
+                        Barcode.FORMAT_CODE_128,
+                        Barcode.FORMAT_QR_CODE
+                    )
+                    .build()
+                val barcodeScanner = BarcodeScanning.getClient(options)
+
+                val analysis = ImageAnalysis.Builder()
+                    .setBackpressureStrategy(ImageAnalysis.STRATEGY_KEEP_ONLY_LATEST)
+                    .build()
+
+                val executor = Executors.newSingleThreadExecutor()
+                analysis.setAnalyzer(executor) { imageProxy ->
+                    processImageProxy(barcodeScanner, imageProxy, onBarcodeDetected)
+                }
+
+                try {
+                    cameraProvider.unbindAll()
+                    cameraProvider.bindToLifecycle(
+                        lifecycleOwner,
+                        CameraSelector.DEFAULT_BACK_CAMERA,
+                        preview,
+                        analysis
+                    )
+                } catch (e: Exception) {
+                    Log.e("ScannerScreen", "Error bind cámara", e)
+                }
+            }, ContextCompat.getMainExecutor(ctx))
+
+            previewView
+        }
+    )
+}
+
+@SuppressLint("UnsafeOptInUsageError")
+private fun processImageProxy(
+    scanner: com.google.mlkit.vision.barcode.BarcodeScanner,
+    imageProxy: androidx.camera.core.ImageProxy,
+    onBarcode: (String) -> Unit
+) {
+    val mediaImage = imageProxy.image
+    if (mediaImage == null) {
+        imageProxy.close()
+        return
     }
+    val input = InputImage.fromMediaImage(mediaImage, imageProxy.imageInfo.rotationDegrees)
+    scanner.process(input)
+        .addOnSuccessListener { barcodes ->
+            barcodes.firstOrNull()?.rawValue?.let { onBarcode(it) }
+        }
+        .addOnFailureListener { Log.e("ScannerScreen", "ML Kit error", it) }
+        .addOnCompleteListener { imageProxy.close() }
+}
+
+// ----------------- Localización -----------------
+
+@SuppressLint("MissingPermission")
+private fun fetchUserLocation(
+    context: Context,
+    onResult: (Double, Double) -> Unit
+) {
+    val client = LocationServices.getFusedLocationProviderClient(context)
+    client.getCurrentLocation(Priority.PRIORITY_HIGH_ACCURACY, null)
+        .addOnSuccessListener { loc ->
+            if (loc != null) onResult(loc.latitude, loc.longitude)
+        }
+        .addOnFailureListener {
+            Log.e("ScannerScreen", "Error GPS", it)
+        }
 }
