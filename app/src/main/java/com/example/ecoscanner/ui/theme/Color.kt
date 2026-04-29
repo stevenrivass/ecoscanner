@@ -2,6 +2,7 @@ package com.example.ecoscanner.ui.theme
 
 import androidx.compose.ui.graphics.Color
 
+val GreenSuperDark = Color(0xFF0D150A)
 
 val GreenDark = Color(0xFF162512)
 
