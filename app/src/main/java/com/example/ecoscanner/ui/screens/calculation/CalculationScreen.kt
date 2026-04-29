@@ -179,6 +179,22 @@ fun CalculationScreen(
                                     )
                                 }
                             }
+
+                            HorizontalDivider(color = MaterialTheme.colorScheme.outlineVariant)
+
+                            InfoRow(
+                                icon = Icons.Filled.Eco,
+                                label = "CO₂ que t'has estalviat (vs país més llunyà)",
+                                value = "${"%.1f".format(s.co2SavedGrams)} g CO₂"
+                            )
+
+                            if (s.saved) {
+                                Text(
+                                    text = "✓ Guardat al teu historial",
+                                    style = MaterialTheme.typography.labelSmall,
+                                    color = MaterialTheme.colorScheme.primary
+                                )
+                            }
                         }
                     }
                 }
@@ -186,8 +202,8 @@ fun CalculationScreen(
 
             Button(
                 onClick = {
-                    navController.navigate(Routes.SCANNER) {
-                        popUpTo(Routes.SCANNER) { inclusive = false }
+                    navController.navigate(Routes.MAIN) {
+                        popUpTo(Routes.MAIN) { inclusive = false }
                     }
                 },
                 modifier = Modifier

@@ -10,8 +10,10 @@ class ScanRepository {
         // Factor de CO2 por km (transporte medio en camión). Ajustable.
         const val CO2_GRAMS_PER_KM = 0.137
 
+
+
         // Coordenadas aproximadas (capital / centro del país)
-        private val COUNTRY_COORDS: Map<String, Pair<Double, Double>> = mapOf(
+        internal val COUNTRY_COORDS: Map<String, Pair<Double, Double>> = mapOf(
             // --- Europa ---
             "españa"         to (40.4168 to  -3.7038),  // Madrid
             "spain"          to (40.4168 to  -3.7038),
@@ -69,6 +71,7 @@ class ScanRepository {
             "turquía"        to ( 39.9334 to  32.8597), // Ankara
             "turkey"         to ( 39.9334 to  32.8597)
         )
+
     }
 
     // ---------- API ----------
@@ -119,4 +122,15 @@ class ScanRepository {
     }
 
     fun co2Grams(distanceKm: Double): Double = distanceKm * CO2_GRAMS_PER_KM
+
+    // Calcula CO2 que se habría emitido si el producto viniera del país más
+    // lejano de nuestro mapa, vs el real. Ahorro = max - real.
+    // Si el origen real ya es el más lejano → ahorro = 0.
+    fun co2SavedGrams(userLat: Double, userLon: Double, realDistanceKm: Double): Double {
+        val maxDistance = COUNTRY_COORDS.values.maxOf { (lat, lon) ->
+            haversineKm(userLat, userLon, lat, lon)
+        }
+        val saved = maxDistance - realDistanceKm
+        return (saved * CO2_GRAMS_PER_KM).coerceAtLeast(0.0)
+    }
 }

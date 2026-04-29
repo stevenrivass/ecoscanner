@@ -6,27 +6,22 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.ecoscanner.data.repository.AuthRepository
+import com.example.ecoscanner.ui.main.MainScreen
 import com.example.ecoscanner.ui.screens.calculation.CalculationScreen
 import com.example.ecoscanner.ui.screens.login.LoginScreen
-import com.example.ecoscanner.ui.screens.scanner.ScannerScreen
-import com.example.ecoscanner.ui.screens.statistics.StatisticsScreen
 
-
-// Objeto para tener los nombres de las rutas sin equivocarno
 object Routes {
     const val LOGIN = "login"
-    const val SCANNER = "scanner"
+    const val MAIN = "main"
     const val CALCULATION = "calculation"
-    const val STATISTICS = "statistics"
 }
 
 @Composable
 fun AppNavigation() {
     val navController = rememberNavController()
 
-    // Si ya hay sesión activa, saltamos al Scanner directamente
     val authRepo = remember { AuthRepository() }
-    val startRoute = if (authRepo.currentUser() != null) Routes.SCANNER else Routes.LOGIN
+    val startRoute = if (authRepo.currentUser() != null) Routes.MAIN else Routes.LOGIN
 
     NavHost(
         navController = navController,
@@ -35,14 +30,11 @@ fun AppNavigation() {
         composable(Routes.LOGIN) {
             LoginScreen(navController)
         }
-        composable(Routes.SCANNER) {
-            ScannerScreen(navController)
+        composable(Routes.MAIN) {
+            MainScreen(navController)
         }
         composable(Routes.CALCULATION) {
             CalculationScreen(navController)
-        }
-        composable(Routes.STATISTICS) {
-            StatisticsScreen(navController)
         }
     }
 }

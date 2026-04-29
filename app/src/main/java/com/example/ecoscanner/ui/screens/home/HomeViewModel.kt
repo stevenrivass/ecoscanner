@@ -1,4 +1,4 @@
-package com.example.ecoscanner.ui.screens.scanner
+package com.example.ecoscanner.ui.screens.home
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -21,14 +21,13 @@ sealed interface ScanUiState {
     data class Error(val message: String) : ScanUiState
 }
 
-class ScannerViewModel(
+class HomeViewModel(
     private val repo: ScanRepository = ScanRepository()
 ) : ViewModel() {
 
     private val _state = MutableStateFlow<ScanUiState>(ScanUiState.Idle)
     val state: StateFlow<ScanUiState> = _state.asStateFlow()
 
-    // Evita procesar el mismo código muchas veces mientras ML Kit detecta
     private var lastBarcode: String? = null
 
     fun onBarcodeScanned(barcode: String, userLat: Double?, userLon: Double?) {
@@ -48,13 +47,26 @@ class ScannerViewModel(
                     _state.value = ScanUiState.Error("Producto no encontrado ($barcode).")
                     return@launch
                 }
-                val name = product.productNameEs
-                    ?: product.productName
-                    ?: "Producto desconocido"
-                val origin = product.origins
-                    ?: product.countries
-                    ?: product.countriesTags?.firstOrNull()
-                    ?: "Desconocido"
+
+                val name = listOfNotNull(
+                    product.productNameEs,
+                    product.productName
+                ).firstOrNull { it.isNotBlank() } ?: "Producto desconocido"
+
+                // Probamos múltiples campos en orden, ignorando vacíos
+                val origin = pickFirstNonBlank(
+                    product.origins,
+                    product.countries,
+                    product.countriesTags?.joinToString(",")
+                )
+
+                if (origin == null) {
+                    _state.value = ScanUiState.Error(
+                        "Aquest producte no té informació d'origen a Open Food Facts. " +
+                                "Prova amb un altre producte."
+                    )
+                    return@launch
+                }
 
                 _state.value = ScanUiState.Success(
                     productName = name,
@@ -72,5 +84,10 @@ class ScannerViewModel(
     fun reset() {
         lastBarcode = null
         _state.value = ScanUiState.Idle
+    }
+
+    // Devuelve el primer string que no sea null ni esté en blanco
+    private fun pickFirstNonBlank(vararg candidates: String?): String? {
+        return candidates.firstOrNull { !it.isNullOrBlank() }
     }
 }

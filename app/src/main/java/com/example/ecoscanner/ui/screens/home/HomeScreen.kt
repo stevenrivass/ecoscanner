@@ -1,4 +1,4 @@
-package com.example.ecoscanner.ui.screens.scanner
+package com.example.ecoscanner.ui.screens.home
 
 import android.Manifest
 import android.annotation.SuppressLint
@@ -14,8 +14,6 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.AccountCircle
-import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.QrCodeScanner
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -43,12 +41,11 @@ import com.google.mlkit.vision.barcode.common.Barcode
 import com.google.mlkit.vision.common.InputImage
 import java.util.concurrent.Executors
 
-
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalPermissionsApi::class)
 @Composable
-fun ScannerScreen(
-    navController: NavHostController,
-    viewModel: ScannerViewModel = viewModel()
+fun HomeScreen(
+    rootNavController: NavHostController,
+    viewModel: HomeViewModel = viewModel()
 ) {
     val context = LocalContext.current
     val state by viewModel.state.collectAsStateWithLifecycle()
@@ -84,157 +81,98 @@ fun ScannerScreen(
     LaunchedEffect(state) {
         val s = state
         if (s is ScanUiState.Success) {
-            navController.currentBackStackEntry?.savedStateHandle?.apply {
+            rootNavController.currentBackStackEntry?.savedStateHandle?.apply {
                 set("productName", s.productName)
                 set("origin", s.origin)
                 set("imageUrl", s.imageUrl ?: "")
                 set("userLat", s.userLat)
                 set("userLon", s.userLon)
             }
-            navController.navigate(Routes.CALCULATION)
+            rootNavController.navigate(Routes.CALCULATION)
             viewModel.reset()
         }
     }
 
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                title = {
-                    Text(
-                        text = "EcoScanner",
-                        style = MaterialTheme.typography.titleLarge.copy(
-                            fontWeight = FontWeight.Bold,
-                            color = MaterialTheme.colorScheme.primary
-                        )
-                    )
-                },
-                navigationIcon = {
-                    IconButton(onClick = {
-                        com.example.ecoscanner.data.repository.AuthRepository().logout()
-                        navController.navigate(Routes.LOGIN) {
-                            popUpTo(Routes.SCANNER) { inclusive = true }
-                        }
-                    }) {
-                        Icon(Icons.Filled.Menu, contentDescription = "Cerrar sesión")
-                    }
-                },
-                actions = {
-                    IconButton(onClick = { navController.navigate(Routes.STATISTICS) }) {
-                        Icon(
-                            imageVector = Icons.Filled.AccountCircle,
-                            contentDescription = "Perfil",
-                            tint = MaterialTheme.colorScheme.primary,
-                            modifier = Modifier.size(32.dp)
-                        )
-                    }
-                }
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(horizontal = 24.dp, vertical = 32.dp),
+        verticalArrangement = Arrangement.spacedBy(24.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Text(
+            text = "EcoScanner",
+            style = MaterialTheme.typography.headlineMedium.copy(
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.primary
             )
-        }
-    ) { innerPadding ->
-        Column(
+        )
+
+        Text(
+            text = "Apunta al codi de barres del producte",
+            style = MaterialTheme.typography.bodyLarge,
+            textAlign = TextAlign.Center
+        )
+
+        Box(
             modifier = Modifier
-                .fillMaxSize()
-                .padding(innerPadding)
-                .padding(horizontal = 24.dp, vertical = 32.dp),
-            verticalArrangement = Arrangement.SpaceBetween,
-            horizontalAlignment = Alignment.CenterHorizontally
+                .fillMaxWidth()
+                .aspectRatio(1f)
+                .clip(RoundedCornerShape(16.dp))
+                .background(MaterialTheme.colorScheme.surfaceVariant)
+                .border(3.dp, MaterialTheme.colorScheme.primary, RoundedCornerShape(16.dp)),
+            contentAlignment = Alignment.Center
         ) {
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally,
-                verticalArrangement = Arrangement.spacedBy(24.dp)
-            ) {
-                Text(
-                    text = "Apunta al codi de barres del producte",
-                    style = MaterialTheme.typography.bodyLarge,
-                    textAlign = TextAlign.Center
-                )
-
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .aspectRatio(1f)
-                        .clip(RoundedCornerShape(16.dp))
-                        .background(MaterialTheme.colorScheme.surfaceVariant)
-                        .border(3.dp, MaterialTheme.colorScheme.primary, RoundedCornerShape(16.dp)),
-                    contentAlignment = Alignment.Center
-                ) {
-                    when {
-                        !permissionsState.allPermissionsGranted -> {
-                            Column(
-                                horizontalAlignment = Alignment.CenterHorizontally,
-                                verticalArrangement = Arrangement.spacedBy(12.dp)
-                            ) {
-                                Icon(
-                                    imageVector = Icons.Filled.QrCodeScanner,
-                                    contentDescription = null,
-                                    tint = MaterialTheme.colorScheme.primary,
-                                    modifier = Modifier.size(64.dp)
-                                )
-                                Text(
-                                    "Es necessiten permisos de càmera i ubicació",
-                                    textAlign = TextAlign.Center
-                                )
-                                Button(onClick = { permissionsState.launchMultiplePermissionRequest() }) {
-                                    Text("Concedir permisos")
-                                }
-                            }
-                        }
-
-                        state is ScanUiState.Loading -> {
-                            Column(
-                                horizontalAlignment = Alignment.CenterHorizontally,
-                                verticalArrangement = Arrangement.spacedBy(12.dp)
-                            ) {
-                                CircularProgressIndicator()
-                                Text("Consultant producte…")
-                            }
-                        }
-
-                        else -> {
-                            CameraPreviewWithScanner(
-                                onBarcodeDetected = { barcode ->
-                                    viewModel.onBarcodeScanned(barcode, userLat, userLon)
-                                }
-                            )
+            when {
+                !permissionsState.allPermissionsGranted -> {
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.spacedBy(12.dp)
+                    ) {
+                        Icon(
+                            imageVector = Icons.Filled.QrCodeScanner,
+                            contentDescription = null,
+                            tint = MaterialTheme.colorScheme.primary,
+                            modifier = Modifier.size(64.dp)
+                        )
+                        Text(
+                            "Es necessiten permisos de càmera i ubicació",
+                            textAlign = TextAlign.Center
+                        )
+                        Button(onClick = { permissionsState.launchMultiplePermissionRequest() }) {
+                            Text("Concedir permisos")
                         }
                     }
                 }
 
-                if (state is ScanUiState.Error) {
-                    Text(
-                        text = (state as ScanUiState.Error).message,
-                        color = MaterialTheme.colorScheme.error,
-                        textAlign = TextAlign.Center
-                    )
-                    TextButton(onClick = { viewModel.reset() }) {
-                        Text("Tornar a provar")
+                state is ScanUiState.Loading -> {
+                    Column(
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.spacedBy(12.dp)
+                    ) {
+                        CircularProgressIndicator()
+                        Text("Consultant producte…")
                     }
+                }
+
+                else -> {
+                    CameraPreviewWithScanner(
+                        onBarcodeDetected = { barcode ->
+                            viewModel.onBarcodeScanned(barcode, userLat, userLon)
+                        }
+                    )
                 }
             }
+        }
 
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(16.dp)
-            ) {
-                OutlinedButton(
-                    onClick = { navController.navigate(Routes.STATISTICS) },
-                    modifier = Modifier
-                        .weight(1f)
-                        .height(56.dp),
-                    shape = MaterialTheme.shapes.medium
-                ) {
-                    Text("Historial")
-                }
-
-                Button(
-                    onClick = { /* el escaneo es automático al detectar */ },
-                    modifier = Modifier
-                        .weight(1f)
-                        .height(56.dp),
-                    shape = MaterialTheme.shapes.medium
-                ) {
-                    Text("Escanejar", fontWeight = FontWeight.Bold)
-                }
+        if (state is ScanUiState.Error) {
+            Text(
+                text = (state as ScanUiState.Error).message,
+                color = MaterialTheme.colorScheme.error,
+                textAlign = TextAlign.Center
+            )
+            TextButton(onClick = { viewModel.reset() }) {
+                Text("Tornar a provar")
             }
         }
     }
@@ -294,7 +232,7 @@ private fun CameraPreviewWithScanner(
                         analysis
                     )
                 } catch (e: Exception) {
-                    Log.e("ScannerScreen", "Error bind cámara", e)
+                    Log.e("HomeScreen", "Error bind cámara", e)
                 }
             }, ContextCompat.getMainExecutor(ctx))
 
@@ -319,7 +257,7 @@ private fun processImageProxy(
         .addOnSuccessListener { barcodes ->
             barcodes.firstOrNull()?.rawValue?.let { onBarcode(it) }
         }
-        .addOnFailureListener { Log.e("ScannerScreen", "ML Kit error", it) }
+        .addOnFailureListener { Log.e("HomeScreen", "ML Kit error", it) }
         .addOnCompleteListener { imageProxy.close() }
 }
 
@@ -336,6 +274,6 @@ private fun fetchUserLocation(
             if (loc != null) onResult(loc.latitude, loc.longitude)
         }
         .addOnFailureListener {
-            Log.e("ScannerScreen", "Error GPS", it)
+            Log.e("HomeScreen", "Error GPS", it)
         }
 }

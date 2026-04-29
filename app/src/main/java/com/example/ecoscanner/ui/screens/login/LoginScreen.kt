@@ -37,13 +37,12 @@ fun LoginScreen(
     // Cuando login/registro es exitoso → navegar al Scanner
     LaunchedEffect(state) {
         if (state is LoginUiState.Success) {
-            navController.navigate(Routes.SCANNER) {
+            navController.navigate(Routes.MAIN) {
                 popUpTo(Routes.LOGIN) { inclusive = true }
             }
             viewModel.resetState()
         }
     }
-
     Surface(
         modifier = Modifier.fillMaxSize(),
         color = MaterialTheme.colorScheme.background
