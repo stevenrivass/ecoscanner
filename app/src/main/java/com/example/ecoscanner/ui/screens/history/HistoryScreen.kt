@@ -7,6 +7,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.History
 import androidx.compose.material3.*
+import androidx.compose.material3.SnackbarDefaults.contentColor
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -21,6 +22,9 @@ import com.example.ecoscanner.model.ScanRecord
 import java.text.SimpleDateFormat
 import java.util.Locale
 import androidx.compose.ui.draw.clip
+import com.example.ecoscanner.ui.theme.GreenDark
+import com.example.ecoscanner.ui.theme.Purple10
+import com.example.ecoscanner.ui.theme.Purple40
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -144,14 +148,17 @@ private fun ScanList(scans: List<ScanRecord>) {
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(16.dp),
                 colors = CardDefaults.cardColors(
-                    containerColor = MaterialTheme.colorScheme.primaryContainer
+                    //containerColor = MaterialTheme.colorScheme.primaryContainer
+                    containerColor = Purple10
                 )
             ) {
                 Column(modifier = Modifier.padding(20.dp)) {
                     Text(
                         text = "Total escanejat",
                         style = MaterialTheme.typography.labelLarge,
-                        color = MaterialTheme.colorScheme.onPrimaryContainer
+//                        color = MaterialTheme.colorScheme.onPrimaryContainer
+                        color = GreenDark
+
                     )
                     Text(
                         text = "${scans.size} productes · ${"%.0f".format(totalCo2)} g CO₂",

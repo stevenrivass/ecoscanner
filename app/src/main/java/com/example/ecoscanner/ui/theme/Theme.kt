@@ -8,9 +8,12 @@ import androidx.compose.runtime.Composable
 import com.example.ecoscanner.data.repository.ThemeMode
 
 private val DarkColorScheme = darkColorScheme(
-    primary = Purple80,
+    primary = GreenPrimary,
     secondary = GreenDark,
-    tertiary = GreenPrimary
+    tertiary = GreenPrimary,
+    background = Black,
+    surface = Black,
+    onPrimary = GreenDark,
 )
 
 private val LightColorScheme = lightColorScheme(
@@ -18,8 +21,10 @@ private val LightColorScheme = lightColorScheme(
     secondary = Purple40,
     tertiary = GreenLigth,
     background = White,
-    surface = GreenDark,
-    onPrimary = GreenDark
+    surface = Green10,
+    textPrimary = GreenDark,
+    textSecondary = Purple10,
+    onPrimary = GreenDark,
 )
 
 @Composable
