@@ -68,6 +68,9 @@ class HomeViewModel(
                     return@launch
                 }
 
+                // Guardamos el DTO completo para Km 0
+                com.example.ecoscanner.data.repository.ScanContext.lastScannedProduct = product
+
                 _state.value = ScanUiState.Success(
                     productName = name,
                     origin = origin,
