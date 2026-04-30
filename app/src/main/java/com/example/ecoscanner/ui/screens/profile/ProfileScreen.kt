@@ -254,9 +254,9 @@ private fun ThemeOption(
             .padding(2.dp)
             .clip(RoundedCornerShape(12.dp)),
         color = if (selected)
-            MaterialTheme.colorScheme.primaryContainer
+            MaterialTheme.colorScheme.onBackground
         else
-            MaterialTheme.colorScheme.onBackground,
+            MaterialTheme.colorScheme.background,
         onClick = onClick
     ) {
         Row(
