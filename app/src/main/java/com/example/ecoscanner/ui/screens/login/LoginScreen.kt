@@ -176,7 +176,7 @@ private fun LoginForm(
             modifier = Modifier.fillMaxWidth().height(56.dp),
             shape = MaterialTheme.shapes.medium,
             colors = ButtonDefaults.outlinedButtonColors(
-                containerColor = MaterialTheme.colorScheme.tertiary,
+                containerColor = MaterialTheme.colorScheme.primary,
                 contentColor = MaterialTheme.colorScheme.onSurface
             )
         ) {
@@ -188,6 +188,7 @@ private fun LoginForm(
             } else {
                 Text(
                     text = "Acceder",
+                    color = MaterialTheme.colorScheme.onSurface,
                     style = MaterialTheme.typography.titleMedium
                         .copy(fontWeight = FontWeight.Bold)
                 )
@@ -323,6 +324,7 @@ private fun EmailVerificationScreen(
 
         Text(
             text = "Verifica el teu correu",
+            color = MaterialTheme.colorScheme.onSurface,
             style = MaterialTheme.typography.headlineSmall.copy(
                 fontWeight = FontWeight.Bold
             ),
@@ -372,6 +374,7 @@ private fun EmailVerificationScreen(
             } else {
                 Text(
                     text = "Ja he verificat el correu",
+                    color = MaterialTheme.colorScheme.surface,
                     fontWeight = FontWeight.Bold
                 )
             }
