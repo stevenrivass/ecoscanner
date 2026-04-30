@@ -3,6 +3,7 @@ package com.example.ecoscanner.data.repository
 import com.example.ecoscanner.model.User
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.SetOptions
 import kotlinx.coroutines.tasks.await
 
 class AuthRepository(
@@ -18,6 +19,21 @@ class AuthRepository(
         )
     }
 
+    // Comprueba si el usuario actual tiene el email verificado
+    fun isEmailVerified(): Boolean {
+        return auth.currentUser?.isEmailVerified == true
+    }
+
+    // Recarga los datos del usuario desde Firebase (importante para detectar verificación)
+    suspend fun reloadUser(): Result<Boolean> {
+        return try {
+            auth.currentUser?.reload()?.await()
+            Result.success(auth.currentUser?.isEmailVerified == true)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
     suspend fun login(email: String, password: String): Result<User> {
         return try {
             val result = auth.signInWithEmailAndPassword(email, password).await()
@@ -29,12 +45,29 @@ class AuthRepository(
         }
     }
 
+    // Registro: crea cuenta + envía email de verificación automáticamente
     suspend fun register(email: String, password: String): Result<User> {
         return try {
             val result = auth.createUserWithEmailAndPassword(email, password).await()
             val fbUser = result.user
                 ?: return Result.failure(Exception("No s'ha pogut crear l'usuari"))
+
+            // Enviamos email de verificación inmediatamente
+            fbUser.sendEmailVerification().await()
+
             Result.success(User(fbUser.uid, fbUser.email ?: ""))
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
+    // Reenvía el email de verificación (por si el primero no llegó o caducó)
+    suspend fun resendVerificationEmail(): Result<Unit> {
+        return try {
+            val user = auth.currentUser
+                ?: return Result.failure(Exception("No hi ha sessió activa"))
+            user.sendEmailVerification().await()
+            Result.success(Unit)
         } catch (e: Exception) {
             Result.failure(e)
         }
@@ -44,9 +77,6 @@ class AuthRepository(
         auth.signOut()
     }
 
-    // ---------- Nombre del usuario (Firestore) ----------
-
-    // Devuelve el nombre guardado, o null si no tiene
     suspend fun getDisplayName(): String? {
         val uid = auth.currentUser?.uid ?: return null
         return try {
@@ -57,14 +87,13 @@ class AuthRepository(
         }
     }
 
-    // Guarda o actualiza el nombre del usuario
     suspend fun setDisplayName(name: String): Result<Unit> {
         val uid = auth.currentUser?.uid
             ?: return Result.failure(Exception("No hay sesión activa."))
         return try {
             db.collection("users")
                 .document(uid)
-                .set(mapOf("displayName" to name), com.google.firebase.firestore.SetOptions.merge())
+                .set(mapOf("displayName" to name), SetOptions.merge())
                 .await()
             Result.success(Unit)
         } catch (e: Exception) {
