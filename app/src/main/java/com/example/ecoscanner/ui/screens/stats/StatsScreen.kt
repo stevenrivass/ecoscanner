@@ -44,6 +44,7 @@ fun StatsScreen(
                 title = {
                     Text(
                         text = "Estadístiques",
+                        color = MaterialTheme.colorScheme.onSurface,
                         style = MaterialTheme.typography.titleLarge.copy(
                             fontWeight = FontWeight.Bold
                         )
@@ -173,14 +174,15 @@ private fun StatsContent(s: StatsUiState.Success) {
             title = "CO₂ estalviat",
             mainValue = "${"%.0f".format(s.totalCo2Saved)} g",
             subtitle = "Triant productes més propers",
-            containerColor = MaterialTheme.colorScheme.primaryContainer,
-            contentColor = MaterialTheme.colorScheme.onPrimaryContainer
+            containerColor = MaterialTheme.colorScheme.onBackground,
+            contentColor = MaterialTheme.colorScheme.onSurface
         )
 
         // ----- SECCIÓN: EQUIVALÈNCIES VISUALS -----
         Spacer(modifier = Modifier.height(8.dp))
         Text(
             text = "Equivalències del CO₂ emès",
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
             style = MaterialTheme.typography.titleMedium.copy(
                 fontWeight = FontWeight.Bold
             )
@@ -289,7 +291,8 @@ private fun EcoLevelCard(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(24.dp),
         colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.primaryContainer
+            containerColor = MaterialTheme.colorScheme.onBackground,
+            contentColor = MaterialTheme.colorScheme.onSurface
         )
     ) {
         Column(modifier = Modifier.padding(24.dp)) {
@@ -300,7 +303,8 @@ private fun EcoLevelCard(
                 // Emoji grande del nivel
                 Text(
                     text = level.emoji,
-                    fontSize = 56.sp
+                    fontSize = 56.sp,
+                    color = MaterialTheme.colorScheme.onSurface
                 )
 
                 Column(modifier = Modifier.weight(1f)) {
@@ -309,12 +313,12 @@ private fun EcoLevelCard(
                         style = MaterialTheme.typography.titleLarge.copy(
                             fontWeight = FontWeight.Bold
                         ),
-                        color = MaterialTheme.colorScheme.onPrimaryContainer
+                        color = MaterialTheme.colorScheme.onSurface
                     )
                     Text(
                         text = level.description,
                         style = MaterialTheme.typography.bodyMedium,
-                        color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.85f)
+                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.85f)
                     )
                 }
             }
@@ -328,8 +332,8 @@ private fun EcoLevelCard(
                     .fillMaxWidth()
                     .height(10.dp)
                     .clip(RoundedCornerShape(5.dp)),
-                color = MaterialTheme.colorScheme.primary,
-                trackColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.5f)
+                color = MaterialTheme.colorScheme.onPrimary,
+                trackColor = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.5f)
             )
 
             Spacer(modifier = Modifier.height(8.dp))
@@ -341,7 +345,7 @@ private fun EcoLevelCard(
                     text = "Estalvia ${"%.0f".format(co2ToNext)} g més de CO₂ per arribar a " +
                             "${nextLevel.emoji} ${nextLevel.displayName}",
                     style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.85f)
+                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.85f)
                 )
             } else {
                 Text(
@@ -349,7 +353,7 @@ private fun EcoLevelCard(
                     style = MaterialTheme.typography.bodySmall.copy(
                         fontWeight = FontWeight.Bold
                     ),
-                    color = MaterialTheme.colorScheme.onPrimaryContainer
+                    color = MaterialTheme.colorScheme.secondary
                 )
             }
         }

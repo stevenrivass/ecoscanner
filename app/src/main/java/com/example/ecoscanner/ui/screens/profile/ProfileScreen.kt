@@ -41,6 +41,7 @@ fun ProfileScreen(
                 title = {
                     Text(
                         text = "Perfil",
+                        color = MaterialTheme.colorScheme.onSurface,
                         style = MaterialTheme.typography.titleLarge.copy(
                             fontWeight = FontWeight.Bold
                         )
@@ -84,7 +85,9 @@ fun ProfileScreen(
                     onClick = { viewModel.saveName() },
                     enabled = !ui.savingName && ui.nameInput.isNotBlank()
                             && ui.nameInput != ui.displayName,
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier.fillMaxWidth(),
+                    colors = ButtonDefaults.outlinedButtonColors(
+                        containerColor = MaterialTheme.colorScheme.onBackground)
                 ) {
                     if (ui.savingName) {
                         CircularProgressIndicator(
@@ -92,7 +95,8 @@ fun ProfileScreen(
                             strokeWidth = 2.dp
                         )
                     } else {
-                        Text("Guardar nom")
+                        Text("Guardar nom",
+                            color = MaterialTheme.colorScheme.onSurface)
                     }
                 }
 
@@ -101,7 +105,7 @@ fun ProfileScreen(
                     Text(
                         text = "✓ Nom actualitzat",
                         style = MaterialTheme.typography.labelMedium,
-                        color = MaterialTheme.colorScheme.primary
+                        color = MaterialTheme.colorScheme.onSurface
                     )
                 }
                 if (ui.errorMessage != null) {
@@ -199,6 +203,7 @@ private fun ProfileHeader(displayName: String, email: String) {
         Column(modifier = Modifier.weight(1f)) {
             Text(
                 text = displayName.ifBlank { "Sense nom" },
+                color = MaterialTheme.colorScheme.onSurface,
                 style = MaterialTheme.typography.titleLarge.copy(
                     fontWeight = FontWeight.Bold
                 )
@@ -206,7 +211,7 @@ private fun ProfileHeader(displayName: String, email: String) {
             Text(
                 text = email,
                 style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
+                color = MaterialTheme.colorScheme.onSurface
             )
         }
     }
@@ -218,7 +223,8 @@ private fun SectionCard(
     content: @Composable ColumnScope.() -> Unit
 ) {
     Card(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier.fillMaxWidth()
+            .padding(2.dp),
         shape = RoundedCornerShape(16.dp),
         elevation = CardDefaults.cardElevation(defaultElevation = 1.dp)
     ) {
@@ -245,11 +251,12 @@ private fun ThemeOption(
     Surface(
         modifier = Modifier
             .fillMaxWidth()
+            .padding(2.dp)
             .clip(RoundedCornerShape(12.dp)),
         color = if (selected)
             MaterialTheme.colorScheme.primaryContainer
         else
-            MaterialTheme.colorScheme.surface,
+            MaterialTheme.colorScheme.onBackground,
         onClick = onClick
     ) {
         Row(
@@ -274,7 +281,7 @@ private fun ThemeOption(
                 color = if (selected)
                     MaterialTheme.colorScheme.onPrimaryContainer
                 else
-                    MaterialTheme.colorScheme.onSurface
+                    MaterialTheme.colorScheme.onSurfaceVariant
             )
             RadioButton(
                 selected = selected,

@@ -35,8 +35,9 @@ fun HistoryScreen(
                 title = {
                     Text(
                         text = "Historial",
+                        color = MaterialTheme.colorScheme.onSurface,
                         style = MaterialTheme.typography.titleLarge.copy(
-                            fontWeight = FontWeight.Bold
+                            fontWeight = FontWeight.Bold,
                         )
                     )
                 }
@@ -87,13 +88,14 @@ private fun EmptyView() {
         Text(
             text = "Encara no has escanejat cap producte",
             style = MaterialTheme.typography.titleMedium,
+            color = MaterialTheme.colorScheme.secondary,
             textAlign = TextAlign.Center
         )
         Spacer(modifier = Modifier.height(8.dp))
         Text(
             text = "Escaneja el primer codi de barres des de l'Inici",
             style = MaterialTheme.typography.bodyMedium,
-            color = MaterialTheme.colorScheme.onSurfaceVariant,
+            color = MaterialTheme.colorScheme.secondary,
             textAlign = TextAlign.Center
         )
     }
@@ -144,21 +146,22 @@ private fun ScanList(scans: List<ScanRecord>) {
                 modifier = Modifier.fillMaxWidth(),
                 shape = RoundedCornerShape(16.dp),
                 colors = CardDefaults.cardColors(
-                    containerColor = MaterialTheme.colorScheme.primaryContainer
+                    containerColor = MaterialTheme.colorScheme.tertiary,
+                    contentColor = MaterialTheme.colorScheme.onSurface
                 )
             ) {
                 Column(modifier = Modifier.padding(20.dp)) {
                     Text(
                         text = "Total escanejat",
                         style = MaterialTheme.typography.labelLarge,
-                        color = MaterialTheme.colorScheme.onPrimaryContainer
+                        color = MaterialTheme.colorScheme.onSurface
                     )
                     Text(
                         text = "${scans.size} productes · ${"%.0f".format(totalCo2)} g CO₂",
                         style = MaterialTheme.typography.titleMedium.copy(
                             fontWeight = FontWeight.Bold
                         ),
-                        color = MaterialTheme.colorScheme.onPrimaryContainer
+                        color = MaterialTheme.colorScheme.onSurface
                     )
                 }
             }
@@ -171,7 +174,7 @@ private fun ScanList(scans: List<ScanRecord>) {
                 style = MaterialTheme.typography.titleSmall.copy(
                     fontWeight = FontWeight.Medium
                 ),
-                color = MaterialTheme.colorScheme.onSurfaceVariant
+                color = MaterialTheme.colorScheme.onSurface
             )
         }
 
@@ -266,7 +269,7 @@ private fun ScanCard(scan: ScanRecord) {
                     style = MaterialTheme.typography.labelLarge.copy(
                         fontWeight = FontWeight.Bold
                     ),
-                    color = MaterialTheme.colorScheme.primary,
+                    color = MaterialTheme.colorScheme.onSurface,
                     modifier = Modifier.padding(horizontal = 10.dp, vertical = 6.dp)
                 )
             }

@@ -2,12 +2,17 @@ package com.example.ecoscanner.ui.theme
 
 import androidx.compose.ui.graphics.Color
 
-val Purple80 = Color(0xFF8B2E73)
+val GreenSuperDark = Color(0xFF0D150A)
+
 val GreenDark = Color(0xFF162512)
 
 val GreenPrimary = Color(0xFF3CA128)
 val GreenLigth = Color(0xFF72EE5D)
+val Green10 = Color(0x463CA128)
 
-val Purple40 = Color(0xFF6650a4)
+val Purple40 = Color(0xFF644DA8)
+val Purple10 = Color(0x706650A4)
 val White = Color(0xFFFFFFFF)
-val Provisional = Color(0xFFCC1616)
+val Orange = Color(0xFFFF5722)
+val Red = Color(0xFFFF0000)
+val Pink = Color(0xFFE91E63)

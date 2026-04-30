@@ -95,7 +95,7 @@ fun CalculationScreen(
             TopAppBar(
                 title = {
                     Text(
-                        "EcoScanner",
+                        "NearChoice",
                         fontWeight = FontWeight.Bold,
                         color = MaterialTheme.colorScheme.primary
                     )

@@ -8,19 +8,40 @@ import androidx.compose.runtime.Composable
 import com.example.ecoscanner.data.repository.ThemeMode
 
 private val DarkColorScheme = darkColorScheme(
-    primary = Purple80,
-    secondary = GreenDark,
-    tertiary = GreenPrimary
+    primary = GreenLigth,
+    secondary = Green10,
+    tertiary = Purple40,
+    background = GreenSuperDark,
+    surface = GreenSuperDark,
+    onPrimary = GreenDark,
+    onSecondary = White,
+    onTertiary = Purple10,
+    onBackground = GreenPrimary,
+    onSurface = White
 )
 
 private val LightColorScheme = lightColorScheme(
     primary = GreenPrimary,
     secondary = Purple40,
-    tertiary = GreenLigth,
+    tertiary = Green10,
     background = White,
-    surface = GreenDark,
-    onPrimary = GreenDark
+    surface = White,
+    onPrimary = Purple40,
+    onSecondary = White,
+    onTertiary = GreenPrimary,
+    onBackground = Purple10,
+    onSurface = GreenSuperDark
 )
+
+/* Other default colors to override
+    background = Color(0xFFFFFBFE),
+    surface = Color(0xFFFFFBFE),
+    onPrimary = Color.White,
+    onSecondary = Color.White,
+    onTertiary = Color.White,
+    onBackground = Color(0xFF1C1B1F),
+    onSurface = Color(0xFF1C1B1F),
+    */
 
 @Composable
 fun EcoScannerTheme(
